@@ -9,12 +9,12 @@ public class ConceptFrecuencyRecord implements Record {
 
 	@Override
 	public void printHeaders() {
-		System.out.format("%10s | %10s | %10s | %30s | %17s \n", "CUI", "SCTID", "FRECUENCY", "TYPE", "CONCEPT");
+		System.out.format("%10s | %10s | %10s | %30s | %-17s \n", "CUI", "SCTID", "FRECUENCY", "TYPE", "CONCEPT");
 	}
 
 	@Override
 	public void printRecord() {
-		System.out.format("%10s | %10s | %10d | %30s | %17s \n", cui, sctid, frecuency, type, concept);
+		System.out.format("%10s | %10s | %10d | %30s | %-17s \n", cui, sctid, frecuency, type, concept);
 	}
 
 	@Override
