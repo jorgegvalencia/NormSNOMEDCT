@@ -13,6 +13,22 @@
 		<property name="password" value="1234" />
 	</bean>
 	
+	<bean id="metathesaurus"
+		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
+		<property name="url" value="jdbc:mysql://kandel.dia.fi.upm.es:3306/metathesaurus" />
+		<property name="username" value="umls" />
+		<property name="password" value="terminology_service" />
+	</bean>
+	
+	<bean id="snomedct"
+		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
+		<property name="url" value="jdbc:mysql://localhost:3306/snomedct" />
+		<property name="username" value="dbuser" />
+		<property name="password" value="1234" />
+	</bean>
+	
 	<bean id="cfrReportJDBCTemplate" class="db.reports.CFReportJDBCTemplate">
 		<property name="dataSource" ref="dataSource" />
 	</bean>
@@ -28,5 +44,13 @@
 	<bean id="conceptJDBCTemplate" class="db.ConceptJDBCTemplate">
 		<property name="dataSource" ref="dataSource" />
 	</bean>
-
+	
+	<bean id="metathesaurusJDBCTemplate" class="db.DBManager$MetathesaurusJDBCTemplate">
+		<property name="dataSource" ref="metathesaurus" />
+	</bean>
+	
+	<bean id="snomedctJDBCTemplate" class="db.DBManager$SnomedJDBCTemplate">
+		<property name="dataSource" ref="snomedct" />
+	</bean>
+	
 </beans>
