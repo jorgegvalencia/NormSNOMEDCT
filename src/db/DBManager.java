@@ -86,6 +86,11 @@ public class DBManager {
 		return snomed.getFSN(sctid);
 	}
 
+	public int getStatusFromDB(String sctid) {
+		SnomedJDBCTemplate snomed = (SnomedJDBCTemplate) context.getBean("snomedJDBCTemplate");
+		return snomed.getStatusFromDB(sctid);
+	}
+
 	private static class MetathesaurusJDBCTemplate {
 		@SuppressWarnings("unused")
 		private DataSource dataSource;
@@ -114,6 +119,15 @@ public class DBManager {
 		public void setDataSource(DataSource dataSource) {
 			this.dataSource = dataSource;
 			jdbcTemplateObject = new JdbcTemplate(dataSource);
+		}
+
+		public int getStatusFromDB(String sctid) {
+			try {
+				String sql = "SELECT DISTINCT active FROM curr_concept_s WHERE id= ?";
+				return jdbcTemplateObject.queryForObject(sql, new Object[] { sctid }, Integer.class);
+			} catch (EmptyResultDataAccessException e) {
+				return 0;
+			}
 		}
 
 		public String getFSN(String sctid) {
