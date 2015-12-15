@@ -27,8 +27,9 @@ public class EligibilityCriteria {
 		default:
 			System.out.println("Type: N/A");
 		}
-		for (Concept concept : concepts)
+		for (Concept concept : concepts) {
 			concept.print();
+		}
 		System.out.println(
 				"+----------------------------------------------------------------------------------------------------------------------------------+");
 	}
@@ -67,8 +68,9 @@ public class EligibilityCriteria {
 			this.criteriaType = criteriaType;
 		}
 
-		public void setConcepts(List<Concept> concepts) {
+		public EligibilityCriteriaBuilder setConcepts(List<Concept> concepts) {
 			this.concepts = concepts;
+			return this;
 		}
 
 		public EligibilityCriteria build() {

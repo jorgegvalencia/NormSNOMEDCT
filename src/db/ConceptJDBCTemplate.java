@@ -49,8 +49,8 @@ public class ConceptJDBCTemplate implements ConceptDAO {
 	public static class ConceptMapper implements RowMapper<Concept> {
 		@Override
 		public Concept mapRow(ResultSet rs, int rowNum) throws SQLException {
-			return new Concept.ConceptBuilder(rs.getString("cui"), rs.getString("sctid"), rs.getString("name"),
-					rs.getString("semantic_type")).build();
+			return new Concept.ConceptBuilder(rs.getString("cui"), rs.getString("sctid"), rs.getString("name"))
+					.setHierarchy(rs.getString("semantic_type")).build();
 		}
 	}
 

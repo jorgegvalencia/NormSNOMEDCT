@@ -81,92 +81,59 @@ public class ClinicalTrial {
 			return new ClinicalTrial(this);
 		}
 
-		public void setUrl(URL url) {
+		public ClinicalTrialBuilder setUrl(URL url) {
 			this.url = url;
+			return this;
 		}
 
-		public void setNctId(String nctid) {
+		public ClinicalTrialBuilder setNctId(String nctid) {
 			this.nctid = nctid;
+			return this;
 		}
 
-		public void setTitle(String title) {
+		public ClinicalTrialBuilder setTitle(String title) {
 			this.title = title;
+			return this;
 		}
 
-		public void setBriefSummary(String briefSummary) {
+		public ClinicalTrialBuilder setBriefSummary(String briefSummary) {
 			this.briefSummary = briefSummary;
+			return this;
 		}
 
-		public void setStartDate(String startDate) {
+		public ClinicalTrialBuilder setStartDate(String startDate) {
 			this.startDate = startDate;
+			return this;
 		}
 
-		public void setStudyType(String studyType) {
+		public ClinicalTrialBuilder setStudyType(String studyType) {
 			this.studyType = studyType;
+			return this;
 		}
 
-		public void setStudyPop(String studyPop) {
+		public ClinicalTrialBuilder setStudyPop(String studyPop) {
 			this.studyPop = studyPop;
+			return this;
 		}
 
-		public void setSamplingMethod(String samplingMethod) {
+		public ClinicalTrialBuilder setSamplingMethod(String samplingMethod) {
 			this.samplingMethod = samplingMethod;
+			return this;
 		}
 
-		public void setCriteria(String criteria) {
+		public ClinicalTrialBuilder setCriteria(String criteria) {
 			this.criteria = criteria;
+			return this;
 		}
 
-		public void setMinimumAge(String minimumAge) {
+		public ClinicalTrialBuilder setMinimumAge(String minimumAge) {
 			this.minimumAge = minimumAge;
+			return this;
 		}
 
-		public void setMaximumAge(String maximumAge) {
+		public ClinicalTrialBuilder setMaximumAge(String maximumAge) {
 			this.maximumAge = maximumAge;
-		}
-
-		public URL getUrl() {
-			return url;
-		}
-
-		public String getNctid() {
-			return nctid;
-		}
-
-		public String getTitle() {
-			return title;
-		}
-
-		public String getBriefSummary() {
-			return briefSummary;
-		}
-
-		public String getStartDate() {
-			return startDate;
-		}
-
-		public String getStudyType() {
-			return studyType;
-		}
-
-		public String getStudyPop() {
-			return studyPop;
-		}
-
-		public String getSamplingMethod() {
-			return samplingMethod;
-		}
-
-		public String getCriteria() {
-			return criteria;
-		}
-
-		public String getMinimumAge() {
-			return minimumAge;
-		}
-
-		public String getMaximumAge() {
-			return maximumAge;
+			return this;
 		}
 	}
 }

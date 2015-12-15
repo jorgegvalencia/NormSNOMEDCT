@@ -86,9 +86,10 @@ public class CTManager {
 		ClinicalTrialBuilder ctb = new ClinicalTrial.ClinicalTrialBuilder();
 		String filePath = "resources/trials/" + nctid + ".xml";
 		// System.out.println("Checking local files...");
-		if (!checkLocalFile(nctid))
+		if (!checkLocalFile(nctid)) {
 			// System.out.println("Sending request to clinicaltrials.gov...");
 			downloadClinicalTrial(nctid);
+		}
 		try {
 			File file = new File(filePath);
 			FileReader fr = new FileReader(file);
@@ -173,11 +174,14 @@ public class CTManager {
 	public void showTrialsFiles() {
 		String path = "resources/trials/";
 		File[] files = new File(path).listFiles();
-		for (File file : files)
-			if (file.getName().contains("NCT"))
-				if (file.isDirectory())
+		for (File file : files) {
+			if (file.getName().contains("NCT")) {
+				if (file.isDirectory()) {
 					System.out.println("Directory: " + file.getName());
-				else
+				} else {
 					System.out.println("File: " + file.getName());
+				}
+			}
+		}
 	}
 }
