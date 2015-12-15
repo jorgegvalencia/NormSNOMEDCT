@@ -1,9 +1,13 @@
 package db;
 
+import javax.sql.DataSource;
+
 import model.ClinicalTrial;
 
 public interface ClinicalTrialDAO {
-	public void create(String nctid);
+	public void setDataSource(DataSource dataSource);
+
+	public void create(ClinicalTrial ct);
 
 	public void delete(String nctid);
 
