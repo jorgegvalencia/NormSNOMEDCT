@@ -27,9 +27,8 @@ public class EligibilityCriteria {
 		default:
 			System.out.println("Type: N/A");
 		}
-		for (Concept concept : concepts) {
+		for (Concept concept : concepts)
 			concept.print();
-		}
 		System.out.println(
 				"+----------------------------------------------------------------------------------------------------------------------------------+");
 	}
@@ -55,11 +54,11 @@ public class EligibilityCriteria {
 	}
 
 	public static class EligibilityCriteriaBuilder {
-		private String trial;
-		private int number;
 		private String utterance;
 		private List<Concept> concepts;
 		private int criteriaType;
+		private String trial;
+		private int number;
 
 		public EligibilityCriteriaBuilder(String trial, int number, String utterance, int criteriaType) {
 			this.trial = trial;

@@ -13,7 +13,7 @@ public class ClinicalTrial {
 	// eligibility
 	// private String studyPop;
 	// private String samplingMethod;
-	// private String criteria;
+	private String criteria;
 	// private String minimumAge;
 	// private String maximumAge;
 
@@ -31,7 +31,7 @@ public class ClinicalTrial {
 		studyType = builder.studyType;
 		// studyPop = builder.studyPop;
 		// samplingMethod = builder.samplingMethod;
-		// criteria = builder.criteria;
+		criteria = builder.criteria;
 		// minimumAge = builder.minimumAge;
 		// maximumAge = builder.maximumAge;
 	}
@@ -58,6 +58,14 @@ public class ClinicalTrial {
 
 	public String getStudyType() {
 		return studyType;
+	}
+
+	public String getCriteria() {
+		return criteria;
+	}
+
+	public void setCriteria(String criteria) {
+		this.criteria = criteria;
 	}
 
 	public static class ClinicalTrialBuilder {

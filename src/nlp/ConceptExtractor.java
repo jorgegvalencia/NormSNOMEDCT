@@ -21,8 +21,6 @@ import model.Concept.ConceptBuilder;
 import model.EligibilityCriteria;
 
 public class ConceptExtractor {
-	// Index for status of concepts
-	private static HashMap<String, Integer> index = new HashMap<>(); // sctid,status
 	private static HashSet<String> excluded = new HashSet<String>(); // CUI
 	private static MetaMapApi mmapi;
 	private static String options = "-y -Q 2 -i -k cell,fish,ftcn,idcn,inpr,menp,mnob,podg,qlco,qnco,spco,tmco -R SNOMEDCT_US";
@@ -59,11 +57,10 @@ public class ConceptExtractor {
 		// for each utterance
 		for (int i = 0; i < uttList.size(); i++) {
 			String utt = uttList.get(i);
-			if (utt.contains("Inclusion") || utt.contains("inclusion")) {
+			if (utt.contains("Inclusion") || utt.contains("inclusion"))
 				type = 1;
-			} else if (utt.contains("Exclusion") || utt.contains("exclusion")) {
+			else if (utt.contains("Exclusion") || utt.contains("exclusion"))
 				type = 2;
-			}
 			// get the concepts from the utterance
 			List<Concept> concepts = getConceptsFromText(utt);
 			// !! REVIEW CONCEPTS
@@ -86,30 +83,24 @@ public class ConceptExtractor {
 				// concepts
 				// !!! PROCESS NOUN PHRASE BEFORE CALLING METAMAP
 				List<Result> result = metamapQuery(Preprocessor.removeStopWords(nounp).toLowerCase());
-				for (Result res : result) {
-					for (Utterance uttr : res.getUtteranceList()) {
-						for (PCM pcm : uttr.getPCMList()) {
-							for (Mapping map : pcm.getMappingList()) {
+				for (Result res : result)
+					for (Utterance uttr : res.getUtteranceList())
+						for (PCM pcm : uttr.getPCMList())
+							for (Mapping map : pcm.getMappingList())
 								for (Ev mapEv : map.getEvList()) {
 									String sctid = "-";
 									String fullySpecifiedName;
 									List<String> sctidList = db.getSCTID(mapEv.getConceptId()); // getProperSCUI
-									if (!sctidList.isEmpty()) {
+									if (!sctidList.isEmpty())
 										sctid = sctidList.get(0);
-									} else {
+									else
 										continue;
-									}
-									if ((fullySpecifiedName = db.getFSN(sctid)) == null) {
+									if ((fullySpecifiedName = db.getFSN(sctid)) == null)
 										continue;
-									}
 									ConceptBuilder cb = new Concept.ConceptBuilder(mapEv.getConceptId(), sctid,
 											fullySpecifiedName);
 									concepts.add(cb.build());
 								}
-							}
-						}
-					}
-				}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -121,14 +112,12 @@ public class ConceptExtractor {
 		List<String> np = new ArrayList<String>();
 		try {
 			List<Result> result = metamapQuery(text);
-			for (Result res : result) {
-				for (Utterance uttr : res.getUtteranceList()) {
+			for (Result res : result)
+				for (Utterance uttr : res.getUtteranceList())
 					for (PCM pcm : uttr.getPCMList()) {
 						String nounphrase = pcm.getPhrase().getPhraseText();
 						np.add(nounphrase);
 					}
-				}
-			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -138,19 +127,17 @@ public class ConceptExtractor {
 	private List<Concept> removeRedundancies(List<Concept> concepts) {
 		List<Concept> result = new ArrayList<>();
 		Map<String, Concept> index = new HashMap<String, Concept>();
-		for (Concept c : concepts) {
-			if (!index.containsKey(c.getCui())) {
+		for (Concept c : concepts)
+			if (!index.containsKey(c.getCui()))
 				index.put(c.getCui(), c);
-			} else {
+			else {
 				String ph1 = c.getPhrase();
 				String ph2 = index.get(c.getCui()).getPhrase();
-				if (ph1.equals(ph2)) {
+				if (ph1.equals(ph2))
 					continue;
-				} else {
+				else
 					index.get(c.getCui()).setPhrase(ph1 + " + " + ph2);
-				}
 			}
-		}
 		result.addAll(index.values());
 		return result;
 	}
@@ -161,9 +148,8 @@ public class ConceptExtractor {
 			Iterator<Concept> it = ec.getConcepts().iterator();
 			while (it.hasNext()) {
 				Concept c = it.next();
-				if (excluded.contains(c.getCui())) {
+				if (excluded.contains(c.getCui()))
 					it.remove();
-				}
 			}
 		}
 		return filteredList;

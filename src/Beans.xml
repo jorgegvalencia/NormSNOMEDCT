@@ -49,7 +49,7 @@
 		<property name="dataSource" ref="metathesaurus" />
 	</bean>
 	
-	<bean id="snomedctJDBCTemplate" class="db.DBManager$SnomedJDBCTemplate">
+	<bean id="snomedJDBCTemplate" class="db.DBManager$SnomedJDBCTemplate">
 		<property name="dataSource" ref="snomedct" />
 	</bean>
 	

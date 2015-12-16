@@ -4,6 +4,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.sql.DataSource;
@@ -22,6 +23,8 @@ import model.EligibilityCriteria;
 public class DBManager {
 	public ApplicationContext context;
 	private static final String APPCONTEXT = "Beans.xml";
+	// Index for status of concepts
+	private static HashMap<String, Integer> index = new HashMap<>(); // sctid,status
 
 	public DBManager() throws InstantiationException {
 		PrintStream stderr = System.err;
@@ -96,6 +99,7 @@ public class DBManager {
 		private DataSource dataSource;
 		private JdbcTemplate jdbcTemplateObject;
 
+		@SuppressWarnings("unused")
 		public void setDataSource(DataSource dataSource) {
 			this.dataSource = dataSource;
 			jdbcTemplateObject = new JdbcTemplate(dataSource);
@@ -116,15 +120,20 @@ public class DBManager {
 		private DataSource dataSource;
 		private JdbcTemplate jdbcTemplateObject;
 
+		@SuppressWarnings("unused")
 		public void setDataSource(DataSource dataSource) {
 			this.dataSource = dataSource;
 			jdbcTemplateObject = new JdbcTemplate(dataSource);
 		}
 
 		public int getStatusFromDB(String sctid) {
+			if (index.containsKey(sctid))
+				return index.get(sctid);
 			try {
 				String sql = "SELECT DISTINCT active FROM curr_concept_s WHERE id= ?";
-				return jdbcTemplateObject.queryForObject(sql, new Object[] { sctid }, Integer.class);
+				int status = jdbcTemplateObject.queryForObject(sql, new Object[] { sctid }, Integer.class);
+				index.put(sctid, status);
+				return status;
 			} catch (EmptyResultDataAccessException e) {
 				return 0;
 			}

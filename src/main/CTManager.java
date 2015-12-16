@@ -36,7 +36,7 @@ public class CTManager {
 	 * @return true if the XML file does exists, false otherwise.
 	 */
 	private boolean checkLocalFile(String nctid) {
-		String filePath = "resources/" + nctid + ".xml";
+		String filePath = "resources/trials/" + nctid + ".xml";
 		File f = new File(filePath);
 		return f.exists();
 	}
@@ -84,12 +84,12 @@ public class CTManager {
 	 */
 	public ClinicalTrial buildClinicalTrial(String nctid) {
 		ClinicalTrialBuilder ctb = new ClinicalTrial.ClinicalTrialBuilder();
+		ClinicalTrial ct = null;
 		String filePath = "resources/trials/" + nctid + ".xml";
 		// System.out.println("Checking local files...");
-		if (!checkLocalFile(nctid)) {
+		if (!checkLocalFile(nctid))
 			// System.out.println("Sending request to clinicaltrials.gov...");
 			downloadClinicalTrial(nctid);
-		}
 		try {
 			File file = new File(filePath);
 			FileReader fr = new FileReader(file);
@@ -147,6 +147,7 @@ public class CTManager {
 					break;
 				}
 			}
+			ct = ctb.build();
 		} catch (XMLStreamException e) {
 			e.printStackTrace();
 		} catch (FileNotFoundException e) {
@@ -154,7 +155,7 @@ public class CTManager {
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 		}
-		return ctb.build();
+		return ct;
 	}
 
 	public List<ClinicalTrial> buildTrialsSet() {
@@ -174,14 +175,11 @@ public class CTManager {
 	public void showTrialsFiles() {
 		String path = "resources/trials/";
 		File[] files = new File(path).listFiles();
-		for (File file : files) {
-			if (file.getName().contains("NCT")) {
-				if (file.isDirectory()) {
+		for (File file : files)
+			if (file.getName().contains("NCT"))
+				if (file.isDirectory())
 					System.out.println("Directory: " + file.getName());
-				} else {
+				else
 					System.out.println("File: " + file.getName());
-				}
-			}
-		}
 	}
 }
