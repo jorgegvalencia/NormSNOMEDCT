@@ -11,16 +11,11 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
-
-import model.ClinicalTrial;
-import model.ClinicalTrial.ClinicalTrialBuilder;
 
 public class CTManager {
 
@@ -82,14 +77,14 @@ public class CTManager {
 	 * @param nctid
 	 * @return
 	 */
-	public ClinicalTrial buildClinicalTrial(String nctid) {
-		ClinicalTrialBuilder ctb = new ClinicalTrial.ClinicalTrialBuilder();
-		ClinicalTrial ct = null;
+	public ProcessingUnit buildClinicalTrial(String nctid) {
+		ProcessingUnit pu = new ProcessingUnit(nctid);
 		String filePath = "resources/trials/" + nctid + ".xml";
-		// System.out.println("Checking local files...");
-		if (!checkLocalFile(nctid))
-			// System.out.println("Sending request to clinicaltrials.gov...");
+		System.out.println("Checking local files...");
+		if (!checkLocalFile(nctid)) {
+			System.out.println("Sending request to clinicaltrials.gov...");
 			downloadClinicalTrial(nctid);
+		}
 		try {
 			File file = new File(filePath);
 			FileReader fr = new FileReader(file);
@@ -102,84 +97,33 @@ public class CTManager {
 				switch (event) {
 				case XMLStreamConstants.START_ELEMENT:
 					currentElement = streamReader.getLocalName();
-					switch (currentElement) {
-					case "url":
-						ctb.setUrl(new URL(streamReader.getElementText()));
-						break;
-					case "nct_id":
-						ctb.setNctId(streamReader.getElementText());
-						break;
-					case "brief_title":
-						ctb.setTitle(streamReader.getElementText());
-						break;
-					case "start_date":
-						ctb.setStartDate(streamReader.getElementText());
-						break;
-					case "study_type":
-						ctb.setStudyType(streamReader.getElementText());
-						break;
-					case "sampling_method":
-						ctb.setSamplingMethod(streamReader.getElementText());
-						break;
-					default:
-					}
+					if (currentElement.equals("brief_title"))
+						pu.getBuilder().setTitle(streamReader.getElementText());
+					else if (currentElement.equals("condition"))
+						pu.getBuilder().setTopic(streamReader.getElementText());
 					break;
 				case XMLStreamConstants.CHARACTERS:
-					if (currentElement.equals("brief_summary")) {
+					if (currentElement.equals("criteria")) {
 						streamReader.next();
 						if (streamReader.getEventType() == XMLStreamReader.START_ELEMENT) {
 							currentElement = streamReader.getLocalName();
-							ctb.setBriefSummary(streamReader.getElementText());
+							pu.getBuilder().setCriteria((streamReader.getElementText()));
 						}
-					} else if (currentElement.equals("criteria")) {
+					} else if (currentElement.equals("brief_summary")) {
 						streamReader.next();
 						if (streamReader.getEventType() == XMLStreamReader.START_ELEMENT) {
 							currentElement = streamReader.getLocalName();
-							ctb.setCriteria((streamReader.getElementText()));
+							pu.getBuilder().setAttribute("brief_summary", streamReader.getElementText());
 						}
-					} else if (currentElement.equals("study_pop")) {
-						streamReader.next();
-						if (streamReader.getEventType() == XMLStreamReader.START_ELEMENT) {
-							currentElement = streamReader.getLocalName();
-							ctb.setStudyPop(((streamReader.getElementText())));
-						}
-					}
-					break;
+					} else
+						break;
 				}
 			}
-			ct = ctb.build();
 		} catch (XMLStreamException e) {
 			e.printStackTrace();
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
 		}
-		return ct;
-	}
-
-	public List<ClinicalTrial> buildTrialsSet() {
-		System.out.print("Building trials set...\r");
-		String path = "resources/trials/";
-		List<ClinicalTrial> list = new ArrayList<ClinicalTrial>();
-		File[] files = new File(path).listFiles();
-		for (File f : files)
-			if (f.getName().contains("NCT")) {
-				ClinicalTrial ct = buildClinicalTrial(f.getName().replace(".xml", ""));
-				list.add(ct);
-			}
-		System.out.print("Building trials set... done\n");
-		return list;
-	}
-
-	public void showTrialsFiles() {
-		String path = "resources/trials/";
-		File[] files = new File(path).listFiles();
-		for (File file : files)
-			if (file.getName().contains("NCT"))
-				if (file.isDirectory())
-					System.out.println("Directory: " + file.getName());
-				else
-					System.out.println("File: " + file.getName());
+		return pu;
 	}
 }

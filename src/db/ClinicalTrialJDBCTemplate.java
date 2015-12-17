@@ -27,7 +27,7 @@ public class ClinicalTrialJDBCTemplate implements ClinicalTrialDAO {
 	public void create(ClinicalTrial ct) {
 		String sql = "INSERT INTO clinical_trial (id,title,studytype) VALUES (?,?,?) ON DUPLICATE KEY UPDATE"
 				+ " title=VALUES(title), studytype=VALUES(studytype)";
-		jdbcTemplateObject.update(sql, ct.getNctid(), ct.getTitle(), ct.getStudyType());
+		jdbcTemplateObject.update(sql, ct.getNctid(), ct.getTitle(), ct.getTopic());
 	}
 
 	@Override
@@ -50,10 +50,9 @@ public class ClinicalTrialJDBCTemplate implements ClinicalTrialDAO {
 	public static class ClinicalTrialMapper implements RowMapper<ClinicalTrial> {
 		@Override
 		public ClinicalTrial mapRow(ResultSet rs, int rowNum) throws SQLException {
-			ClinicalTrialBuilder ctb = new ClinicalTrial.ClinicalTrialBuilder();
-			ctb.setNctId(rs.getString("id"));
+			ClinicalTrialBuilder ctb = new ClinicalTrial.ClinicalTrialBuilder(rs.getString("id"));
 			ctb.setTitle(rs.getString("title"));
-			ctb.setStudyType(rs.getString("studytype"));
+			ctb.setTopic(rs.getString("studytype"));
 			return ctb.build();
 		}
 	}
