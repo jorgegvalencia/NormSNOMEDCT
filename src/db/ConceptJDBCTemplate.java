@@ -10,6 +10,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 
 import model.Concept;
+import model.ConceptFactory;
 
 public class ConceptJDBCTemplate implements ConceptDAO {
 	@SuppressWarnings("unused")
@@ -26,8 +27,7 @@ public class ConceptJDBCTemplate implements ConceptDAO {
 	public void create(Concept concept) {
 		String sql = "INSERT INTO concept (sctid,cui,name,semantic_type) VALUES (?,?,?,?) ON DUPLICATE KEY UPDATE"
 				+ " sctid=VALUES(sctid), cui=VALUES(cui), name=VALUES(name), semantic_type=VALUES(semantic_type)";
-		jdbcTemplateObject.update(sql, concept.getSctid(), concept.getCui(), concept.getPreferedName(),
-				concept.getHierarchy());
+		jdbcTemplateObject.update(sql, concept.getSctid(), concept.getCui(), concept.getFsn(), concept.getHierarchy());
 	}
 
 	@Override
@@ -49,8 +49,11 @@ public class ConceptJDBCTemplate implements ConceptDAO {
 	public static class ConceptMapper implements RowMapper<Concept> {
 		@Override
 		public Concept mapRow(ResultSet rs, int rowNum) throws SQLException {
-			return new Concept.ConceptBuilder(rs.getString("cui"), rs.getString("sctid"), rs.getString("name"))
-					.setHierarchy(rs.getString("semantic_type")).build();
+			Concept c = ConceptFactory.getConcept(rs.getString("cui"));
+			if (c == null)
+				c = new Concept(rs.getString("cui"), rs.getString("sctid"), rs.getString("name"),
+						rs.getString("semantic_type"));
+			return c;
 		}
 	}
 

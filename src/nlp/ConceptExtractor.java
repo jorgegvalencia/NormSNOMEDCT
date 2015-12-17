@@ -17,7 +17,6 @@ import gov.nih.nlm.nls.metamap.PCM;
 import gov.nih.nlm.nls.metamap.Result;
 import gov.nih.nlm.nls.metamap.Utterance;
 import model.Concept;
-import model.Concept.ConceptBuilder;
 import model.EligibilityCriteria;
 
 public class ConceptExtractor {
@@ -66,8 +65,7 @@ public class ConceptExtractor {
 			// !! REVIEW CONCEPTS
 			List<Concept> rs = removeRedundancies(concepts);
 			// create EligibilityCriteria object
-			EligibilityCriteria ec = new EligibilityCriteria.EligibilityCriteriaBuilder(trial, i, utt, type)
-					.setConcepts(rs).build();
+			EligibilityCriteria ec = new EligibilityCriteria(trial, i, utt, type);
 			ecList.add(ec);
 		}
 		ecList = filterConcepts(ecList);
