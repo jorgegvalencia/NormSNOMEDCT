@@ -32,7 +32,7 @@ public class CTManager {
 	 * @param nctid
 	 * @return true if the XML file does exists, false otherwise.
 	 */
-	private boolean checkLocalFile(String nctid) {
+	private static boolean checkLocalFile(String nctid) {
 		String filePath = "resources/trials/" + nctid + ".xml";
 		File f = new File(filePath);
 		return f.exists();
@@ -43,7 +43,7 @@ public class CTManager {
 	 *
 	 * @param nctid
 	 */
-	private void downloadClinicalTrial(String nctid) {
+	private static void downloadClinicalTrial(String nctid) {
 		String path = "https://clinicaltrials.gov/show/" + nctid + "?displayxml=true";
 		String filePath = "resources/trials/" + nctid + ".xml";
 		try {
@@ -79,7 +79,7 @@ public class CTManager {
 	 * @param nctid
 	 * @return
 	 */
-	public ProcessingUnit buildClinicalTrial(String nctid) {
+	public static ProcessingUnit buildProcessingUnit(String nctid) {
 		ProcessingUnit pu = new ProcessingUnit(nctid);
 		String filePath = "resources/trials/" + nctid + ".xml";
 		System.out.println("Checking local files...");
@@ -99,10 +99,11 @@ public class CTManager {
 				switch (event) {
 				case XMLStreamConstants.START_ELEMENT:
 					currentElement = streamReader.getLocalName();
-					if (currentElement.equals("brief_title"))
+					if (currentElement.equals("brief_title")) {
 						pu.getBuilder().setTitle(streamReader.getElementText());
-					else if (currentElement.equals("condition"))
+					} else if (currentElement.equals("condition")) {
 						pu.getBuilder().setTopic(streamReader.getElementText());
+					}
 					break;
 				case XMLStreamConstants.CHARACTERS:
 					if (currentElement.equals("criteria")) {
@@ -117,8 +118,9 @@ public class CTManager {
 							currentElement = streamReader.getLocalName();
 							pu.getBuilder().setAttribute("brief_summary", streamReader.getElementText());
 						}
-					} else
+					} else {
 						break;
+					}
 				}
 			}
 		} catch (XMLStreamException e) {

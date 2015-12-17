@@ -1,8 +1,11 @@
 package nlp;
 
 import java.io.IOException;
+import java.text.NumberFormat;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import db.DBDriver;
 import gov.nih.nlm.nls.metamap.Ev;
@@ -20,6 +23,7 @@ public class ConceptExtractor {
 	// private static HashSet<String> excluded = new HashSet<String>(); // CUI
 	private static MetaMapApi mmapi;
 	private static String options = "-y -Q 2 -i -k cell,fish,ftcn,idcn,inpr,menp,mnob,podg,qlco,qnco,spco,tmco -R SNOMEDCT_US";
+	private static NumberFormat format = NumberFormat.getInstance(Locale.US);
 
 	public ConceptExtractor() {
 		mmapi = new MetaMapApiImpl();
@@ -28,29 +32,36 @@ public class ConceptExtractor {
 
 	public ConceptExtractor(String host) {
 		mmapi = new MetaMapApiImpl();
-		mmapi.setHost(host);
+		if (!host.equals("localhost")) {
+			mmapi.setHost(host);
+		}
 		mmapi.setOptions(options);
 	}
 
-	public List<ProcessingUnit> process(List<ProcessingUnit> pulist, boolean save) {
+	public ProcessingUnit process(ProcessingUnit pu, boolean save) {
 		// List<ProcessingUnit> resultlist = new ArrayList<ProcessingUnit>();
-		for (ProcessingUnit pu : pulist) {
-			List<Match> matches;
-			long startTime = System.nanoTime();
-			for (EligibilityCriteria ec : pu.getBuilder().getCriteriaSet().getEclist()) {
-				matches = getMatches(ec.getUtterance());
-				ec.setMatches(matches);
-			}
-			long endTime = System.nanoTime();
-			double time = Double.parseDouble(String.format("%.2f", (endTime - startTime) / Math.pow(10, 9)));
-			if (pu.isProcessed()) {
-				pu.setTimeAndBuild(time);
-			}
-			if (save) {
-				DBDriver.getInstance().saveProcessingUnit(pu);
-			}
+		List<Match> matches;
+		long startTime = System.nanoTime();
+		for (EligibilityCriteria ec : pu.getBuilder().getCriteriaSet().getEclist()) {
+			matches = getMatches(ec.getUtterance());
+			ec.setMatches(matches);
 		}
-		return pulist;
+		long endTime = System.nanoTime();
+		Number number;
+		double time = 0;
+		try {
+			number = format.parse(String.format("%.2f", (endTime - startTime) / Math.pow(10, 9)));
+			time = number.doubleValue();
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		if (pu.isProcessed()) {
+			pu.setTimeAndBuild(time);
+		}
+		if (save) {
+			DBDriver.getInstance().saveProcessingUnit(pu);
+		}
+		return pu;
 	}
 
 	private List<Match> getMatches(String utterance) {
