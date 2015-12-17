@@ -1,7 +1,10 @@
 package model;
 
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import db.DBManager;
 
 public class Concept {
 	private static final Pattern pattern = Pattern.compile("\\([a-z\\s/]+\\)\\z");
@@ -10,11 +13,17 @@ public class Concept {
 	private String fsn;
 	private String hierarchy;
 
-	public Concept(String cui) {
+	private DBManager db;
+
+	public Concept(String cui) throws InstantiationException {
 		this.cui = cui;
-		getSCTid();
-		getFullySpecifiedName();
-		getSnomedHierarchy();
+		try {
+			getSCTid();
+			getFullySpecifiedName();
+			getSnomedHierarchy();
+		} catch (InstantiationException e) {
+			throw new InstantiationException();
+		}
 	}
 
 	public Concept(String cui, String sctid, String fsn, String hierarchy) {
@@ -40,12 +49,31 @@ public class Concept {
 		return hierarchy;
 	}
 
-	private void getSCTid() {
+	private void getSCTid() throws InstantiationException {
+		if (db == null)
+			db = DBManager.getInstance();
+		List<String> candidates = db.getSCTID(cui);
+		if (candidates.size() < 1)
+			throw new InstantiationException("Could not resolve the SnomedCT identifier for the concept " + cui);
+		else {
+			int status = 0;
+			for (String candidate : candidates) {
+				status = db.getStatusFromDB(candidate);
+				if (status == 1)
+					sctid = candidate;
+			}
+		}
 
 	}
 
-	private void getFullySpecifiedName() {
-
+	private void getFullySpecifiedName() throws InstantiationException {
+		if (db == null)
+			db = DBManager.getInstance();
+		String fsn = db.getFSN(sctid);
+		if (fsn == null)
+			throw new InstantiationException("Could not resolve the Fully Specified Name for the concept " + cui);
+		else
+			this.fsn = fsn;
 	}
 
 	private void getSnomedHierarchy() {

@@ -8,14 +8,14 @@ public class ClinicalTrial {
 	private String nctid;
 	private String title;
 	private String topic;
-	private CriteriaSet criteria;
+	private CriteriaSet criteriaset;
 	private Map<String, String> attributes;
 
 	private ClinicalTrial(ClinicalTrialBuilder builder) {
 		nctid = builder.nctid;
 		title = builder.title;
 		topic = builder.topic;
-		criteria = builder.criteria;
+		criteriaset = builder.criteriaset;
 		attributes = builder.attributes;
 	}
 
@@ -32,7 +32,7 @@ public class ClinicalTrial {
 	}
 
 	public CriteriaSet getCriteria() {
-		return criteria;
+		return criteriaset;
 	}
 
 	public Map<String, String> getAttributes() {
@@ -43,7 +43,7 @@ public class ClinicalTrial {
 		private String nctid;
 		private String title;
 		private String topic;
-		private CriteriaSet criteria;
+		private CriteriaSet criteriaset;
 		private Map<String, String> attributes;
 
 		public ClinicalTrialBuilder(String nctid) {
@@ -65,8 +65,8 @@ public class ClinicalTrial {
 		}
 
 		public ClinicalTrialBuilder setCriteria(String criteria) {
-			CriteriaSet criteriaset = new CriteriaSet(criteria);
-			this.criteria = criteriaset;
+			CriteriaSet criteriaset = new CriteriaSet(nctid, criteria);
+			this.criteriaset = criteriaset;
 			return this;
 		}
 
@@ -77,8 +77,8 @@ public class ClinicalTrial {
 			return this;
 		}
 
-		public CriteriaSet getCriteria() {
-			return criteria;
+		public CriteriaSet getCriteriaSet() {
+			return criteriaset;
 		}
 	}
 }

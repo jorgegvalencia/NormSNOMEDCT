@@ -1,8 +1,5 @@
 package db;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -16,34 +13,34 @@ import org.springframework.jdbc.core.JdbcTemplate;
 
 import db.reports.CFReportJDBCTemplate;
 import db.reports.ConceptFrecuencyReport;
+import main.ProcessingUnit;
 import model.ClinicalTrial;
 import model.Concept;
 import model.EligibilityCriteria;
 
 public class DBManager {
-	public ApplicationContext context;
+	private ApplicationContext context;
 	private static final String APPCONTEXT = "Beans.xml";
 	// Index for status of concepts
 	private static HashMap<String, Integer> index = new HashMap<>(); // sctid,status
 
-	public DBManager() throws InstantiationException {
-		PrintStream stderr = System.err;
-		try {
-			System.setErr(new PrintStream(new FileOutputStream("norm.log")));
-			context = new ClassPathXmlApplicationContext(APPCONTEXT);
-			System.setErr(stderr);
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} finally {
-			if (context == null)
-				throw new InstantiationException("ERROR in starting DBManager: Can't write in file log \"norm.log\"");
-		}
+	private DBManager() {
+		context = new ClassPathXmlApplicationContext(APPCONTEXT);
+	}
+
+	public static DBManager getInstance() {
+		return SingletonHelper.INSTANCE;
 	}
 
 	public ConceptFrecuencyReport getCFReport() {
 		CFReportJDBCTemplate cfrReportJDBCTemplate = (CFReportJDBCTemplate) context.getBean("cfrReportJDBCTemplate");
 		ConceptFrecuencyReport cfr = new ConceptFrecuencyReport(cfrReportJDBCTemplate.listConceptFrecuencies());
 		return cfr;
+	}
+
+	public void saveProcessingUnit(ProcessingUnit pu) {
+		// TODO Auto-generated method stub
+
 	}
 
 	public ClinicalTrial getClinicalTrial(String nctid) {
@@ -92,6 +89,10 @@ public class DBManager {
 	public int getStatusFromDB(String sctid) {
 		SnomedJDBCTemplate snomed = (SnomedJDBCTemplate) context.getBean("snomedJDBCTemplate");
 		return snomed.getStatusFromDB(sctid);
+	}
+
+	private static class SingletonHelper {
+		private static final DBManager INSTANCE = new DBManager();
 	}
 
 	private static class MetathesaurusJDBCTemplate {

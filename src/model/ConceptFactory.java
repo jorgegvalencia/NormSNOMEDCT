@@ -7,10 +7,13 @@ public class ConceptFactory {
 
 	public static Concept getConcept(String cui) {
 		Concept c = concepts.get(cui);
-		if (c == null) {
-			c = new Concept(cui);
-			concepts.put(cui, c);
-		}
+		if (c == null)
+			try {
+				c = new Concept(cui);
+				concepts.put(cui, c);
+			} catch (InstantiationException e) {
+				c = null;
+			}
 		return c;
 	}
 }
