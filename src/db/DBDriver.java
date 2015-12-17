@@ -1,10 +1,9 @@
 package db;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map.Entry;
 
 import javax.sql.DataSource;
 
@@ -12,12 +11,9 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
 
 import model.ClinicalTrial;
-import model.ClinicalTrial.ClinicalTrialBuilder;
 import model.Concept;
-import model.ConceptFactory;
 import model.EligibilityCriteria;
 import nlp.Match;
 import nlp.ProcessingUnit;
@@ -58,6 +54,7 @@ public class DBDriver implements NormSnomedDAO {
 				saveEligibilityCriteria(ec);
 				for (Match m : ec.getMatches()) {
 					saveConcept(m.getConcept());
+					saveMatch(m, ec.getTrial(), ec.getNumber());
 				}
 			}
 		}
@@ -80,6 +77,9 @@ public class DBDriver implements NormSnomedDAO {
 		String sql = "INSERT INTO clinical_trial (id,title,studytype) VALUES (?,?,?) ON DUPLICATE KEY UPDATE"
 				+ " title=VALUES(title), studytype=VALUES(studytype)";
 		jdbcTemplateObject.update(sql, ct.getNctid(), ct.getTitle(), ct.getTopic());
+		for (Entry<String, String> entry : ct.getAttributes().entrySet()) {
+			saveAttribute(entry, ct.getNctid());
+		}
 	}
 
 	@Override
@@ -135,34 +135,28 @@ public class DBDriver implements NormSnomedDAO {
 		return snomed.getStatusFromDB(sctid);
 	}
 
-	public static class ConceptMapper implements RowMapper<Concept> {
-		@Override
-		public Concept mapRow(ResultSet rs, int rowNum) throws SQLException {
-			Concept c = ConceptFactory.getConcept(rs.getString("cui"));
-			if (c == null) {
-				c = new Concept(rs.getString("cui"), rs.getString("sctid"), rs.getString("name"),
-						rs.getString("semantic_type"));
+	private void saveMatch(Match m, String trial, int number) {
+		String sql = "INSERT INTO match (number,trial,sctid,phrase,synonym,prefered_name,matched_words) VALUES (?,?,?,?,?,?,?) ON DUPLICATE KEY UPDATE"
+				+ " number=VALUES(number), trial=VALUES(trial), sctid=VALUES(sctid), phrase=VALUES(phrase),"
+				+ " synonym=VALUES(synonym), prefered_name=VALUES(prefered_name), matched_words=VALUES(matched_words)";
+		StringBuilder sb = new StringBuilder();
+		sb.append("[");
+		for (int i = 0; i < m.getMatchedWords().size(); i++) {
+			String mw = m.getMatchedWords().get(i);
+			sb.append(" " + mw + " ");
+			if (i < m.getMatchedWords().size() - 1) {
+				sb.append(",");
 			}
-			return c;
 		}
+		sb.append("]");
+		jdbcTemplateObject.update(sql, number, trial, m.getConcept().getSctid(), m.getPhrase(), m.getTerm(),
+				m.getPrefered(), sb.toString());
 	}
 
-	public static class EligibilityCriteriaMapper implements RowMapper<EligibilityCriteria> {
-		@Override
-		public EligibilityCriteria mapRow(ResultSet rs, int rowNum) throws SQLException {
-			return new EligibilityCriteria(rs.getString("clinical_trial_id"), rs.getInt("id"),
-					rs.getString("utterance"), rs.getInt("inc_exc"));
-		}
-	}
-
-	public static class ClinicalTrialMapper implements RowMapper<ClinicalTrial> {
-		@Override
-		public ClinicalTrial mapRow(ResultSet rs, int rowNum) throws SQLException {
-			ClinicalTrialBuilder ctb = new ClinicalTrial.ClinicalTrialBuilder(rs.getString("id"));
-			ctb.setTitle(rs.getString("title"));
-			ctb.setTopic(rs.getString("studytype"));
-			return ctb.build();
-		}
+	private void saveAttribute(Entry<String, String> pair, String trial) {
+		String sql = "INSERT INTO attribute (trial, attribute, value) VALUES(?,?,?) ON DUPLICATE KEY UPDATE"
+				+ " trial=VALUES(trial), attribute=VALUES(attribute), value=VALUES(value)";
+		jdbcTemplateObject.update(sql, trial, pair.getKey(), pair.getValue());
 	}
 
 	private static class MetathesaurusJDBCTemplate {

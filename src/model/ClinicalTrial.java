@@ -71,8 +71,9 @@ public class ClinicalTrial {
 		}
 
 		public ClinicalTrialBuilder setAttribute(String attr, String value) {
-			if (attributes == null)
+			if (attributes == null) {
 				attributes = new HashMap<String, String>();
+			}
 			attributes.put(attr, value);
 			return this;
 		}
