@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import db.DBManager;
+import db.DBDriver;
 import gov.nih.nlm.nls.metamap.Ev;
 import gov.nih.nlm.nls.metamap.Mapping;
 import gov.nih.nlm.nls.metamap.MetaMapApi;
@@ -47,7 +47,7 @@ public class ConceptExtractor {
 				pu.setTimeAndBuild(time);
 			}
 			if (save) {
-				DBManager.getInstance().saveProcessingUnit(pu);
+				DBDriver.getInstance().saveProcessingUnit(pu);
 			}
 		}
 		return pulist;
