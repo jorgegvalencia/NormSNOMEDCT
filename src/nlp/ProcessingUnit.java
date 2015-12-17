@@ -1,4 +1,4 @@
-package main;
+package nlp;
 
 import model.ClinicalTrial;
 import model.ClinicalTrial.ClinicalTrialBuilder;
@@ -13,6 +13,10 @@ public class ProcessingUnit {
 		time = 0.0;
 	}
 
+	public ClinicalTrialBuilder getBuilder() {
+		return builder;
+	}
+
 	public ClinicalTrial getClinicalTrial() {
 		return clinicalTrial;
 	}
@@ -21,13 +25,13 @@ public class ProcessingUnit {
 		return time;
 	}
 
-	public void setTime(long time) {
+	public void setTimeAndBuild(double time) {
 		this.time = time;
 		clinicalTrial = builder.build();
 	}
 
-	public ClinicalTrialBuilder getBuilder() {
-		return builder;
+	public boolean isProcessed() {
+		return clinicalTrial == null;
 	}
 
 }

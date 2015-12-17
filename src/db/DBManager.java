@@ -13,10 +13,10 @@ import org.springframework.jdbc.core.JdbcTemplate;
 
 import db.reports.CFReportJDBCTemplate;
 import db.reports.ConceptFrecuencyReport;
-import main.ProcessingUnit;
 import model.ClinicalTrial;
 import model.Concept;
 import model.EligibilityCriteria;
+import nlp.ProcessingUnit;
 
 public class DBManager {
 	private ApplicationContext context;
