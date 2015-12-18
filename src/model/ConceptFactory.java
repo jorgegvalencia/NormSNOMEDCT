@@ -2,8 +2,6 @@ package model;
 
 import java.util.HashMap;
 
-import db.DBManager;
-
 public class ConceptFactory {
 	private static final HashMap<String, Concept> concepts = new HashMap<String, Concept>();
 
@@ -13,7 +11,7 @@ public class ConceptFactory {
 			try {
 				c = new Concept(cui);
 				concepts.put(cui, c);
-				DBManager.getInstance().saveConcept(c);
+				// DBManager.getInstance().saveConcept(c);
 			} catch (InstantiationException e) {
 				c = null;
 			}

@@ -60,7 +60,10 @@ public class ClinicalTrial {
 		}
 
 		public ClinicalTrialBuilder setTopic(String topic) {
-			this.topic = topic;
+			if (this.topic == null)
+				this.topic = topic;
+			else
+				this.topic = this.topic + ", " + topic;
 			return this;
 		}
 
@@ -71,9 +74,8 @@ public class ClinicalTrial {
 		}
 
 		public ClinicalTrialBuilder setAttribute(String attr, String value) {
-			if (attributes == null) {
+			if (attributes == null)
 				attributes = new HashMap<String, String>();
-			}
 			attributes.put(attr, value);
 			return this;
 		}

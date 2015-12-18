@@ -84,7 +84,7 @@ public class CTManager {
 		String filePath = "resources/trials/" + nctid + ".xml";
 		// System.out.println("Checking local files...");
 		if (!checkLocalFile(nctid)) {
-			System.out.println("Sending request to clinicaltrials.gov...");
+			System.out.print("Sending request to clinicaltrials.gov...");
 			downloadClinicalTrial(nctid);
 		}
 		try {

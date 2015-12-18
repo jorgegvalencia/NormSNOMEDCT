@@ -9,22 +9,22 @@ public class TrialConceptRecord implements Record {
 
 	@Override
 	public void printHeaders() {
-		System.out.format("%10s \n | %10s | %5d | %17s | %s | \n", trial, "CUI", "SCTID", "CONCEPT", "PHRASE");
+		System.out.format("%10s\n %10s | %10s | %-100s | %s\n", trial, "CUI", "SCTID", "CONCEPT", "PHRASE");
 	}
 
 	@Override
 	public void printRecord() {
-		System.out.format("%10s | %5d | %17s | %s | \n", cui, sctid, concept, phrase);
+		System.out.format(" %10s | %10s | %-100s | %s \n", cui, sctid, concept, phrase);
 	}
 
 	@Override
 	public String getHeaders() {
-		return String.format("%10s \n | %10s | %5d | %17s | %s | \n", trial, "CUI", "SCTID", "CONCEPT", "PHRASE");
+		return String.format("%10s\n %10s | %10d | %-100s | %s\n", trial, "CUI", "SCTID", "CONCEPT", "PHRASE");
 	}
 
 	@Override
 	public String getRecord() {
-		return String.format("%10s | %5d | %17s | %s | \n", cui, sctid, concept, phrase);
+		return String.format(" %10s | %10s | %-100s | %s \n", cui, sctid, concept, phrase);
 	}
 
 	public void setTrial(String trial) {

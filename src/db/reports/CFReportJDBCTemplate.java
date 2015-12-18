@@ -19,11 +19,10 @@ public class CFReportJDBCTemplate {
 	}
 
 	public List<ConceptFrecuencyRecord> listConceptFrecuencies() {
-		String sql = "SELECT concept.name AS CONCEPT, concept.cui AS CUI, "
-				+ "ec_concepts.concept_sctid AS SCTID, COUNT(ec_concepts.eligibility_criteria_id) AS FRECUENCY, "
-				+ "concept.semantic_type AS TYPE FROM ec_concepts, concept WHERE "
-				+ "concept.sctid = ec_concepts.concept_sctid GROUP BY concept_sctid ORDER BY FRECUENCY DESC "
-				+ "LIMIT 0,100";
+		String sql = "SELECT concept.fsn AS CONCEPT, concept.cui AS CUI, "
+				+ "cmatch.sctid AS SCTID, COUNT(cmatch.number) AS FRECUENCY, "
+				+ "concept.hierarchy AS TYPE FROM cmatch, concept WHERE "
+				+ "concept.sctid = cmatch.sctid GROUP BY cmatch.sctid ORDER BY FRECUENCY DESC " + "LIMIT 0,100";
 		List<ConceptFrecuencyRecord> records = jdbcTemplateObject.query(sql, new ConceptFrecuencyMapper());
 		return records;
 	}

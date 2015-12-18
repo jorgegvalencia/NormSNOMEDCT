@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import db.reports.ReportGenerator;
 import nlp.ConceptExtractor;
 import nlp.ProcessingUnit;
 
@@ -16,7 +17,9 @@ public class App {
 	private static final int MEAN = 10;
 
 	public static void main(String[] args) {
-		processBatch(0, 5);
+		ReportGenerator.getTCReport("NCT00148876").buildReport();
+		// processTrial("NCT00148876");
+		// processBatch(0, 5);
 	}
 
 	private static List<ProcessingUnit> processBatch(int offset, int limit) {
@@ -44,7 +47,7 @@ public class App {
 			if (f.getName().contains("NCT")) {
 				j++;
 				System.out.print(dateFormat.format(new Date()));
-				System.out.print(" [" + j + "]" + "[" + f.getName() + "] ");
+				System.out.print(" [" + j + "]" + "[" + f.getName().replace(".xml", "") + "] ");
 				ProcessingUnit pu = CTManager.buildProcessingUnit(f.getName().replace(".xml", ""));
 				ce.process(pu, STORE);
 				System.out.println(pu.getTime() + " s");
@@ -53,5 +56,16 @@ public class App {
 		}
 		System.out.println("...done");
 		return pulist;
+	}
+
+	private static ProcessingUnit processTrial(String nctid) {
+		DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
+		ConceptExtractor ce = new ConceptExtractor(HOST);
+		System.out.print(dateFormat.format(new Date()));
+		System.out.print(" [*]" + "[" + nctid + "] ");
+		ProcessingUnit pu = CTManager.buildProcessingUnit(nctid);
+		ce.process(pu, STORE);
+		System.out.println(pu.getTime() + " s");
+		return pu;
 	}
 }

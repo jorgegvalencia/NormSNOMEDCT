@@ -17,6 +17,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 
 import db.reports.CFReportJDBCTemplate;
 import db.reports.ConceptFrecuencyReport;
+import db.reports.TConceptsJDBCTemplate;
+import db.reports.TrialConceptsReport;
 import model.ClinicalTrial;
 import model.Concept;
 import model.EligibilityCriteria;
@@ -55,6 +57,12 @@ public class DBManager {
 		CFReportJDBCTemplate cfrReportJDBCTemplate = (CFReportJDBCTemplate) context.getBean("cfrReportJDBCTemplate");
 		ConceptFrecuencyReport cfr = new ConceptFrecuencyReport(cfrReportJDBCTemplate.listConceptFrecuencies());
 		return cfr;
+	}
+
+	public TrialConceptsReport getTCReport(String nctid) {
+		TConceptsJDBCTemplate tcrReportJDBCTemplate = (TConceptsJDBCTemplate) context.getBean("tcrReportJDBCTemplate");
+		TrialConceptsReport tcr = new TrialConceptsReport(tcrReportJDBCTemplate.listTrialConcepts(nctid));
+		return tcr;
 	}
 
 	public void saveProcessingUnit(ProcessingUnit pu) {
