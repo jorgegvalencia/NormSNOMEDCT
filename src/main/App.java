@@ -15,7 +15,7 @@ public class App {
 	private static final boolean STORE = true;
 
 	public static void main(String[] args) {
-		processBatch(0, 200);
+		processBatch(0, 5);
 	}
 
 	private static List<ProcessingUnit> processBatch(int offset, int limit) {
@@ -27,19 +27,17 @@ public class App {
 
 		// Time estimation
 		System.out.print("Processing trials... estimated time: ");
-		if (((files.length - offset < limit) ? files.length - offset : limit) * 18 / 60 > 60) {
+		if (((files.length - offset < limit) ? files.length - offset : limit) * 18 / 60 > 60)
 			System.out.print(((files.length - offset < limit) ? files.length - offset : limit) * 18 / 3600 + " h\n");
-		} else {
+		else
 			System.out.print(((files.length - offset < limit) ? files.length - offset : limit) * 18 / 60 + " min\n");
-		}
 
 		// Processing
 		int j = 0;
 		for (int i = offset; i < files.length && i < limit + offset; i++) {
 			File f = files[i];
-			if (j >= limit + offset) {
+			if (j >= limit + offset)
 				break;
-			}
 			if (f.getName().contains("NCT")) {
 				j++;
 				System.out.print(dateFormat.format(new Date()));

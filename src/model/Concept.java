@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import db.DBDriver;
+import db.DBManager;
 
 public class Concept {
 	private static final Pattern pattern = Pattern.compile("\\([a-z\\s/]+\\)\\z");
@@ -13,7 +13,7 @@ public class Concept {
 	private String fsn;
 	private String hierarchy;
 
-	private DBDriver db;
+	private DBManager db;
 
 	public Concept(String cui) throws InstantiationException {
 		this.cui = cui;
@@ -50,9 +50,8 @@ public class Concept {
 	}
 
 	private void getSCTid() throws InstantiationException {
-		if (db == null) {
-			db = DBDriver.getInstance();
-		}
+		if (db == null)
+			db = DBManager.getInstance();
 		List<String> candidates = db.getSCTID(cui);
 		if (candidates.size() < 1)
 			throw new InstantiationException("Could not resolve the SnomedCT identifier for the concept " + cui);
@@ -60,32 +59,28 @@ public class Concept {
 			int status = 0;
 			for (String candidate : candidates) {
 				status = db.getStatusFromDB(candidate);
-				if (status == 1) {
+				if (status == 1)
 					sctid = candidate;
-				}
 			}
 		}
 
 	}
 
 	private void getFullySpecifiedName() throws InstantiationException {
-		if (db == null) {
-			db = DBDriver.getInstance();
-		}
-		String fsn = db.getFSN(sctid);
-		if (fsn == null)
+		if (db == null)
+			db = DBManager.getInstance();
+		List<String> fsn = db.getFSN(sctid);
+		if (fsn == null || fsn.size() < 1)
 			throw new InstantiationException("Could not resolve the Fully Specified Name for the concept " + cui);
-		else {
-			this.fsn = fsn;
-		}
+		else
+			this.fsn = fsn.get(0);
 	}
 
 	private void getSnomedHierarchy() {
 		Matcher m = pattern.matcher(fsn);
-		if (m.find()) {
+		if (m.find())
 			hierarchy = m.group(0).replaceAll("\\p{Punct}", "");
-		} else {
+		else
 			hierarchy = "N/A";
-		}
 	}
 }

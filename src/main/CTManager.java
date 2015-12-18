@@ -82,7 +82,7 @@ public class CTManager {
 	public static ProcessingUnit buildProcessingUnit(String nctid) {
 		ProcessingUnit pu = new ProcessingUnit(nctid);
 		String filePath = "resources/trials/" + nctid + ".xml";
-		System.out.println("Checking local files...");
+		// System.out.println("Checking local files...");
 		if (!checkLocalFile(nctid)) {
 			System.out.println("Sending request to clinicaltrials.gov...");
 			downloadClinicalTrial(nctid);
@@ -99,11 +99,10 @@ public class CTManager {
 				switch (event) {
 				case XMLStreamConstants.START_ELEMENT:
 					currentElement = streamReader.getLocalName();
-					if (currentElement.equals("brief_title")) {
+					if (currentElement.equals("brief_title"))
 						pu.getBuilder().setTitle(streamReader.getElementText());
-					} else if (currentElement.equals("condition")) {
+					else if (currentElement.equals("condition"))
 						pu.getBuilder().setTopic(streamReader.getElementText());
-					}
 					break;
 				case XMLStreamConstants.CHARACTERS:
 					if (currentElement.equals("criteria")) {
@@ -118,9 +117,8 @@ public class CTManager {
 							currentElement = streamReader.getLocalName();
 							pu.getBuilder().setAttribute("brief_summary", streamReader.getElementText());
 						}
-					} else {
+					} else
 						break;
-					}
 				}
 			}
 		} catch (XMLStreamException e) {

@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import db.DBDriver;
+import db.DBManager;
 import gov.nih.nlm.nls.metamap.Ev;
 import gov.nih.nlm.nls.metamap.Mapping;
 import gov.nih.nlm.nls.metamap.MetaMapApi;
@@ -32,9 +32,8 @@ public class ConceptExtractor {
 
 	public ConceptExtractor(String host) {
 		mmapi = new MetaMapApiImpl();
-		if (!host.equals("localhost")) {
+		if (!host.equals("localhost"))
 			mmapi.setHost(host);
-		}
 		mmapi.setOptions(options);
 	}
 
@@ -50,17 +49,15 @@ public class ConceptExtractor {
 		Number number;
 		double time = 0;
 		try {
-			number = format.parse(String.format("%.2f", (endTime - startTime) / Math.pow(10, 9)));
+			number = format.parse(String.format("%.2f", (endTime - startTime) / Math.pow(10, 11)));
 			time = number.doubleValue();
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
-		if (pu.isProcessed()) {
+		if (!pu.isProcessed())
 			pu.setTimeAndBuild(time);
-		}
-		if (save) {
-			DBDriver.getInstance().saveProcessingUnit(pu);
-		}
+		if (save)
+			DBManager.getInstance().saveProcessingUnit(pu);
 		return pu;
 	}
 
@@ -68,23 +65,18 @@ public class ConceptExtractor {
 		List<Match> matches = new ArrayList<Match>();
 		try {
 			List<Result> result = metamapQuery(utterance);
-			for (Result res : result) {
-				for (Utterance uttr : res.getUtteranceList()) {
-					for (PCM pcm : uttr.getPCMList()) {
-						for (Mapping map : pcm.getMappingList()) {
+			for (Result res : result)
+				for (Utterance uttr : res.getUtteranceList())
+					for (PCM pcm : uttr.getPCMList())
+						for (Mapping map : pcm.getMappingList())
 							for (Ev mapEv : map.getEvList()) {
 								Concept c = ConceptFactory.getConcept(mapEv.getConceptId());
-								if (c == null) {
+								if (c == null)
 									continue;
-								}
 								Match match = new Match(c, pcm.getPhrase().getPhraseText(), mapEv.getConceptName(),
 										mapEv.getPreferredName(), mapEv.getMatchedWords());
 								matches.add(match);
 							}
-						}
-					}
-				}
-			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

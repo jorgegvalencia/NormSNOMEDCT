@@ -31,7 +31,7 @@ public class ProcessingUnit {
 	}
 
 	public boolean isProcessed() {
-		return clinicalTrial == null;
+		return clinicalTrial != null;
 	}
 
 }
