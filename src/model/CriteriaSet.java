@@ -23,9 +23,9 @@ public class CriteriaSet {
 		int type = 0;
 		for (int i = 0; i < uttList.size(); i++) { // for each utterance
 			String utt = uttList.get(i);
-			if (utt.toLowerCase().contains("Inclusion criteria"))
+			if (utt.toLowerCase().contains("inclusion criteria"))
 				type = 1;
-			else if (utt.toLowerCase().contains("Exclusion criteria"))
+			else if (utt.toLowerCase().contains("exclusion criteria"))
 				type = 2;
 			EligibilityCriteria ec = new EligibilityCriteria(trial, i, utt, type);
 			ecList.add(ec);

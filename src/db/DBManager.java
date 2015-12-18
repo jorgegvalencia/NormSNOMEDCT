@@ -118,6 +118,7 @@ public class DBManager {
 	}
 
 	private static class NormJDBCTemplate implements NormSnomedDAO {
+		@SuppressWarnings("unused")
 		private DataSource dataSource;
 		private JdbcTemplate jdbcTemplateObject;
 

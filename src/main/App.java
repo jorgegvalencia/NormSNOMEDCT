@@ -13,6 +13,7 @@ import nlp.ProcessingUnit;
 public class App {
 	private static final String HOST = "luria.dia.fi.upm.es";
 	private static final boolean STORE = true;
+	private static final int MEAN = 10;
 
 	public static void main(String[] args) {
 		processBatch(0, 5);
@@ -27,10 +28,12 @@ public class App {
 
 		// Time estimation
 		System.out.print("Processing trials... estimated time: ");
-		if (((files.length - offset < limit) ? files.length - offset : limit) * 18 / 60 > 60)
-			System.out.print(((files.length - offset < limit) ? files.length - offset : limit) * 18 / 3600 + " h\n");
+		if (((files.length - offset < limit) ? files.length - offset : limit) * MEAN / 60 > 60)
+			System.out.print(((files.length - offset < limit) ? files.length - offset : limit) * MEAN / 3600 + " h\n");
+		else if (((files.length - offset < limit) ? files.length - offset : limit) * MEAN / 60 > 1)
+			System.out.print(((files.length - offset < limit) ? files.length - offset : limit) * MEAN / 60 + " min\n");
 		else
-			System.out.print(((files.length - offset < limit) ? files.length - offset : limit) * 18 / 60 + " min\n");
+			System.out.print(((files.length - offset < limit) ? files.length - offset : limit) * MEAN + " s\n");
 
 		// Processing
 		int j = 0;
@@ -48,6 +51,7 @@ public class App {
 				pulist.add(pu);
 			}
 		}
+		System.out.println("...done");
 		return pulist;
 	}
 }

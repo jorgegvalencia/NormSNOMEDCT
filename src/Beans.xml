@@ -44,17 +44,4 @@
 	<bean id="cfrReportJDBCTemplate" class="db.reports.CFReportJDBCTemplate">
 		<property name="dataSource" ref="dataSource" />
 	</bean>
-	
-	<bean id="ctJDBCTemplate" class="db.ClinicalTrialJDBCTemplate">
-		<property name="dataSource" ref="dataSource" />
-	</bean>
-	
-	<bean id="ecJDBCTemplate" class="db.EligibilityCriteriaJDBCTemplate">
-		<property name="dataSource" ref="dataSource" />
-	</bean>
-	
-	<bean id="conceptJDBCTemplate" class="db.ConceptJDBCTemplate">
-		<property name="dataSource" ref="dataSource" />
-	</bean>
-
 </beans>
