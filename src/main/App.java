@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import db.reports.ReportGenerator;
 import nlp.ConceptExtractor;
 import nlp.ProcessingUnit;
 
@@ -15,16 +14,42 @@ public class App {
 	private static final String HOST = "luria.dia.fi.upm.es";
 	private static final boolean STORE = true;
 	private static final int MEAN = 10;
+	private static final String DEFAULTPATH = "resources/trials/";
+	private static final String NAME = "App";
 
 	public static void main(String[] args) {
-		ReportGenerator.getTCReport("NCT00148876").buildReport();
-		// processTrial("NCT00148876");
-		// processBatch(0, 5);
+		if (args.length == 4 && args[0].equals("-f")) {
+			String filepath = args[1];
+			if (new File(filepath).getAbsoluteFile().exists()) {
+				int offset = Integer.parseInt(args[2]);
+				int limit = Integer.parseInt(args[3]);
+				processBatch(filepath, offset, limit);
+			} else {
+				System.err.println("The filepath: " + filepath + " doesn't exists.");
+				usage();
+			}
+		} else if (args.length == 1 && args[0].equals("-d"))
+			processBatch(DEFAULTPATH, 0, 10000);
+		else if (args.length == 2 && args[0].equals("-t")) {
+			String trial = args[1];
+			processTrial(trial);
+		} else
+			usage();
 	}
 
-	private static List<ProcessingUnit> processBatch(int offset, int limit) {
+	private static void usage() {
+		System.out.println("Usage: " + NAME
+				+ " [-f <filepath> <offset> <limit>] || [-d] || [-t <nctid>] || [-r <nctid>] "
+				+ "\n -f: Process a set of trials located in the directory <filepath>. Files must be in XML format."
+				+ "\n\t <offset>: The start file from the directory." + "\n\t <limit>: The maximum files to process. "
+				+ "\n -d: Default: Process all trial xml files located in default directory: \"/resources/trials\""
+				+ "\n -t: Process a trial." + "\n\t <nctid>: Identifier of the trial file." + "\n -r: Build a report."
+				+ "\n\t <nctid>: Identifier of the trial file.");
+	}
+
+	private static List<ProcessingUnit> processBatch(String filepath, int offset, int limit) {
 		DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
-		String path = "resources/trials/";
+		String path = filepath;
 		File[] files = new File(path).listFiles();
 		ConceptExtractor ce = new ConceptExtractor(HOST);
 		List<ProcessingUnit> pulist = new ArrayList<>();
