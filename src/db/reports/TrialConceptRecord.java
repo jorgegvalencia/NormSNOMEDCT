@@ -1,5 +1,7 @@
 package db.reports;
 
+import java.util.Map;
+
 public class TrialConceptRecord implements Record {
 	private String trial;
 	private String sctid;
@@ -18,13 +20,17 @@ public class TrialConceptRecord implements Record {
 	}
 
 	@Override
-	public String getHeaders() {
-		return String.format("%10s\n %10s | %10d | %-100s | %s\n", trial, "CUI", "SCTID", "CONCEPT", "PHRASE");
+	public Map<Integer, String> getHeaders() {
+		return null;
+		// return String.format("%10s\n %10s | %10d | %-100s | %s\n", trial,
+		// "CUI", "SCTID", "CONCEPT", "PHRASE");
 	}
 
 	@Override
-	public String getRecord() {
-		return String.format(" %10s | %10s | %-100s | %s \n", cui, sctid, concept, phrase);
+	public Map<Integer, String> getRecord() {
+		return null;
+		// return String.format(" %10s | %10s | %-100s | %s \n", cui, sctid,
+		// concept, phrase);
 	}
 
 	public void setTrial(String trial) {

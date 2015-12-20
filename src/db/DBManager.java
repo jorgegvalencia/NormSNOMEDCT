@@ -17,6 +17,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 
 import db.reports.CFReportJDBCTemplate;
 import db.reports.ConceptFrecuencyReport;
+import db.reports.MatchReport;
 import db.reports.TConceptsJDBCTemplate;
 import db.reports.TrialConceptsReport;
 import model.ClinicalTrial;
@@ -40,8 +41,9 @@ public class DBManager {
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} finally {
-			if (context == null)
+			if (context == null) {
 				System.exit(-1);
+			}
 		}
 	}
 
@@ -57,6 +59,12 @@ public class DBManager {
 		CFReportJDBCTemplate cfrReportJDBCTemplate = (CFReportJDBCTemplate) context.getBean("cfrReportJDBCTemplate");
 		ConceptFrecuencyReport cfr = new ConceptFrecuencyReport(cfrReportJDBCTemplate.listConceptFrecuencies());
 		return cfr;
+	}
+
+	public MatchReport getMatchReport(String sctid) {
+		CFReportJDBCTemplate cfrReportJDBCTemplate = (CFReportJDBCTemplate) context.getBean("cfrReportJDBCTemplate");
+		MatchReport mr = new MatchReport(cfrReportJDBCTemplate.listMatchRecord(sctid));
+		return mr;
 	}
 
 	public TrialConceptsReport getTCReport(String nctid) {
@@ -167,8 +175,9 @@ public class DBManager {
 			String sql = "INSERT INTO clinical_trial (nctid,title,topic) VALUES (?,?,?) ON DUPLICATE KEY UPDATE"
 					+ " nctid=VALUES(nctid), title=VALUES(title), topic=VALUES(topic)";
 			jdbcTemplateObject.update(sql, ct.getNctid(), ct.getTitle(), ct.getTopic());
-			for (Entry<String, String> entry : ct.getAttributes().entrySet())
+			for (Entry<String, String> entry : ct.getAttributes().entrySet()) {
 				saveAttribute(entry, ct.getNctid());
+			}
 		}
 
 		@Override
@@ -218,8 +227,9 @@ public class DBManager {
 			for (int i = 0; i < m.getMatchedWords().size(); i++) {
 				String mw = m.getMatchedWords().get(i);
 				sb.append(" " + mw + " ");
-				if (i < m.getMatchedWords().size() - 1)
+				if (i < m.getMatchedWords().size() - 1) {
 					sb.append(",");
+				}
 			}
 			sb.append("]");
 			jdbcTemplateObject.update(sql, number, trial, m.getConcept().getSctid(), m.getPhrase(), m.getTerm(),
