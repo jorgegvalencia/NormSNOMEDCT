@@ -16,6 +16,7 @@ public class Test {
 	public static void main(String[] args) {
 		Report rp = DBManager.getInstance().getCFReport();
 		rp.buildReport();
+		rp.buildExcel();
 	}
 
 	private static ProcessingUnit init(String nctid) {
@@ -24,8 +25,9 @@ public class Test {
 
 	private static List<ProcessingUnit> init(List<String> trials) {
 		List<ProcessingUnit> pulist = new ArrayList<>();
-		for (String nctid : trials)
+		for (String nctid : trials) {
 			pulist.add(CTManager.buildProcessingUnit(nctid));
+		}
 		return pulist;
 	}
 }

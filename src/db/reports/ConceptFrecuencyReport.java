@@ -3,6 +3,10 @@ package db.reports;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -29,9 +33,10 @@ public class ConceptFrecuencyReport extends Report {
 
 	@Override
 	public void buildExcel() {
+		DateFormat dateFormat = new SimpleDateFormat("YY_MMM_dd-HH_mm_ss");
 		FileOutputStream out = null;
 		try {
-			out = new FileOutputStream("results.xlsx");
+			out = new FileOutputStream("results_" + dateFormat.format(new Date()) + ".xlsx");
 
 			XSSFWorkbook wb = new XSSFWorkbook(); // create a new workbook
 			XSSFSheet sheet = wb.createSheet(); // create a new sheet
@@ -62,26 +67,26 @@ public class ConceptFrecuencyReport extends Report {
 			wb.setSheetName(0, "Main");
 
 			// Headers
-			Map<Integer, String> headers = getHeaders();
+			Map<Integer, String> headers = this.getRecords().get(0).getHeaders();
 			row = sheet.createRow(0);
-			for (int i = 1; i < headers.size(); i++) {
+			for (int i = 0; i < headers.size(); i++) {
+				cell = row.createCell(i);
 				cell.setCellStyle(head);
-				cell = row.createCell(i - 1);
-				cell.setCellValue(headers.get(i));
+				cell.setCellValue(headers.get(i + 1));
 			}
 
 			// Data
 			for (int i = 0; i < getRecords().size(); i++) {
 				Record cfr = getRecords().get(i);
+				List<XSSFCell> hyper = new ArrayList<>();
 				row = sheet.createRow(i);
 
 				Map<Integer, String> record = cfr.getRecord();
-				for (int j = 1; j < record.size(); j++) {
-					row = sheet.createRow(j);
+				for (int j = 0; j < record.size(); j++) {
 					cell = row.createCell(j);
-					cell.setCellValue(record.get(j));
+					cell.setCellValue(record.get(j + 1));
 				}
-
+				hyper.add(cell);
 				XSSFSheet phraseSheet = wb.createSheet();
 
 				////////////////////////////////////////////////////////////////////////
@@ -120,9 +125,15 @@ public class ConceptFrecuencyReport extends Report {
 
 					Map<Integer, String> matchRecord = mrr.getRecord();
 					cell.setCellValue(matchRecord.get(j));
+
+					Hyperlink link2 = createHelper.createHyperlink(Hyperlink.LINK_DOCUMENT);
+					link2.setAddress("'" + i + "'!A1");
+					hyper.get(j).setCellStyle(hlink_style);
+					hyper.get(j).setHyperlink(link2);
 				}
 				////////////////////////////////////////////////////////////////////////
 			}
+
 			////////////////////////////////////////////////////////////////////////////
 
 			// Free resources
