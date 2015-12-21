@@ -20,25 +20,24 @@ public class ConceptFrecuencyRecord implements Record {
 		System.out.format("%10s | %10s | %10d | %30s | %-17s \n", cui, sctid, frecuency, type, concept);
 	}
 
-	@Override
-	public Map<Integer, String> getHeaders() {
+	public static Map<Integer, String> getHeaderFields() {
 		HashMap<Integer, String> record = new HashMap<>();
-		record.put(1, "CONCEPT");
-		record.put(2, "CUI");
-		record.put(3, "SCTID");
-		record.put(4, "FRECUENCY");
-		record.put(5, "TYPE");
+		record.put(0, "CUI");
+		record.put(1, "SCTID");
+		record.put(2, "FRECUENCY");
+		record.put(3, "TYPE");
+		record.put(4, "CONCEPT");
 		return record;
 	}
 
 	@Override
-	public Map<Integer, String> getRecord() {
+	public Map<Integer, String> getRecordFields() {
 		HashMap<Integer, String> record = new HashMap<>();
-		record.put(1, concept);
-		record.put(2, cui);
-		record.put(3, sctid);
-		record.put(4, Integer.toString(frecuency));
-		record.put(5, type);
+		record.put(0, cui);
+		record.put(1, sctid);
+		record.put(2, Integer.toString(frecuency));
+		record.put(3, type);
+		record.put(4, concept);
 		return record;
 	}
 

@@ -25,7 +25,6 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import db.DBManager;
 
 public class ConceptFrecuencyReport extends Report {
-	private MatchReport mr;
 
 	public ConceptFrecuencyReport(List<ConceptFrecuencyRecord> records) {
 		super(records);
@@ -44,7 +43,6 @@ public class ConceptFrecuencyReport extends Report {
 			XSSFCell cell = null; // declare a cell object reference
 
 			CreationHelper createHelper = wb.getCreationHelper();
-			Hyperlink link = createHelper.createHyperlink(Hyperlink.LINK_DOCUMENT);
 			Font hlink_font = wb.createFont();
 
 			// Styles
@@ -52,7 +50,7 @@ public class ConceptFrecuencyReport extends Report {
 			f.setBold(true);
 
 			XSSFCellStyle head = wb.createCellStyle();
-			head.setFillForegroundColor(new XSSFColor(new java.awt.Color(255, 192, 0)));
+			head.setFillForegroundColor(new XSSFColor(new java.awt.Color(150, 150, 150)));
 			head.setFillPattern(CellStyle.SOLID_FOREGROUND);
 			head.setFont(f);
 
@@ -67,73 +65,101 @@ public class ConceptFrecuencyReport extends Report {
 			wb.setSheetName(0, "Main");
 
 			// Headers
-			Map<Integer, String> headers = this.getRecords().get(0).getHeaders();
+			Map<Integer, String> headers = ConceptFrecuencyRecord.getHeaderFields();
 			row = sheet.createRow(0);
-			for (int i = 0; i < headers.size(); i++) {
-				cell = row.createCell(i);
+			for (int colnum = 0; colnum < headers.size(); colnum++) {
+				cell = row.createCell(colnum);
 				cell.setCellStyle(head);
-				cell.setCellValue(headers.get(i + 1));
+				cell.setCellValue(headers.get(colnum));
 			}
 
 			// Data
-			for (int i = 0; i < getRecords().size(); i++) {
-				Record cfr = getRecords().get(i);
-				List<XSSFCell> hyper = new ArrayList<>();
-				row = sheet.createRow(i);
-
-				Map<Integer, String> record = cfr.getRecord();
-				for (int j = 0; j < record.size(); j++) {
-					cell = row.createCell(j);
-					cell.setCellValue(record.get(j + 1));
+			List<XSSFCell> hyper = new ArrayList<>();
+			for (int rownum = 0; rownum < getRecords().size(); rownum++) {
+				// Take each record
+				Record record = getRecords().get(rownum);
+				// Create a row
+				row = sheet.createRow(rownum + 1);
+				// For each record, get the record fields
+				Map<Integer, String> recordFields = record.getRecordFields();
+				for (int colnum = 0; colnum < recordFields.size(); colnum++) {
+					// Insert all fields in the row
+					cell = row.createCell(colnum);
+					cell.setCellValue(recordFields.get(colnum));
 				}
+				// Add the last cell of the row corresponding
+				// to the concept to the hyperlink list
 				hyper.add(cell);
-				XSSFSheet phraseSheet = wb.createSheet();
 
 				////////////////////////////////////////////////////////////////////////
 
 				// Matches sheets
+				XSSFSheet matchSheet = wb.createSheet();
+				wb.setSheetName((rownum + 1), "" + (rownum + 1));
 
-				mr = DBManager.getInstance().getMatchReport(record.get(3));
+				// Get the matches report
+				MatchReport matchReport = DBManager.getInstance().getMatchReport(record.getRecordFields().get(1)); // SCTID
 
 				// Headers
-				row = phraseSheet.createRow(0);
-				Map<Integer, String> mrheaders = mr.getHeaders();
+				row = matchSheet.createRow(0);
+				Map<Integer, String> mrheaders = MatchRecord.getHeaderFields();
 
+				// First row of headers: Concept, Return
 				cell = row.createCell(0);
 				cell.setCellStyle(head);
-				cell.setCellValue(cfr.getRecord().get("CONCEPT"));
+				cell.setCellValue(record.getRecordFields().get(4)); // FSN
 
 				cell = row.createCell(1);
 				cell.setCellValue("Return");
 				cell.setCellStyle(hlink_style);
-				cell.setHyperlink(link);
-				link.setAddress("'Main'!A1");
+				Hyperlink linkreturn = createHelper.createHyperlink(Hyperlink.LINK_DOCUMENT);
+				linkreturn.setAddress("'Main'!A" + (rownum + 1));
+				cell.setHyperlink(linkreturn);
 
-				row = phraseSheet.createRow(1);
-
-				for (int j = 1; j < mrheaders.size(); j++) {
+				// Second row of headers: Trial, Utterance, Phrase, Synonym,
+				// Matched Words
+				row = matchSheet.createRow(1);
+				for (int colnum = 0; colnum < mrheaders.size(); colnum++) {
+					cell = row.createCell(colnum);
 					cell.setCellStyle(head);
-					cell = row.createCell(j - 1);
-					cell.setCellValue(mrheaders.get(i));
+					cell.setCellValue(mrheaders.get(colnum));
 				}
 
 				// Data
-				row = phraseSheet.createRow(2);
-				for (int j = 0; j < mr.getRecords().size(); j++) {
-					Record mrr = mr.getRecords().get(j);
-					cell = row.createCell(j);
 
-					Map<Integer, String> matchRecord = mrr.getRecord();
-					cell.setCellValue(matchRecord.get(j));
-
-					Hyperlink link2 = createHelper.createHyperlink(Hyperlink.LINK_DOCUMENT);
-					link2.setAddress("'" + i + "'!A1");
-					hyper.get(j).setCellStyle(hlink_style);
-					hyper.get(j).setHyperlink(link2);
+				// For each match
+				for (int j = 0; j < matchReport.getRecords().size(); j++) {
+					// Get the record of the match
+					Record matchRecord = matchReport.getRecords().get(j);
+					// Create a new row
+					row = matchSheet.createRow(j + 2);
+					Map<Integer, String> matchRecordFields = matchRecord.getRecordFields();
+					for (int field = 0; field < matchRecordFields.size(); field++) {
+						cell = row.createCell(field);
+						cell.setCellValue(matchRecordFields.get(field + 1));
+					}
 				}
+				Hyperlink link2 = createHelper.createHyperlink(Hyperlink.LINK_DOCUMENT);
+				link2.setAddress("'" + (rownum + 1) + "'!A1");
+				hyper.get(hyper.size() - 1).setCellStyle(hlink_style);
+				hyper.get(hyper.size() - 1).setHyperlink(link2);
+
+				// phraseSheet.autoSizeColumn(0);
+				// phraseSheet.autoSizeColumn(1);
+				// matchSheet.autoSizeColumn(2);
+				matchSheet.setColumnWidth(0, (short) ((250) / ((double) 1 / 20)));
+				matchSheet.setColumnWidth(1, (short) ((1000) / ((double) 1 / 20)));
+				matchSheet.setColumnWidth(2, (short) ((750) / ((double) 1 / 20)));
+				matchSheet.autoSizeColumn(3);
+				matchSheet.autoSizeColumn(4);
+
 				////////////////////////////////////////////////////////////////////////
 			}
-
+			sheet.autoSizeColumn(0);
+			sheet.autoSizeColumn(1);
+			sheet.autoSizeColumn(2);
+			sheet.autoSizeColumn(3);
+			sheet.autoSizeColumn(4);
 			////////////////////////////////////////////////////////////////////////////
 
 			// Free resources

@@ -19,15 +19,14 @@ public class TrialConceptRecord implements Record {
 		System.out.format(" %10s | %10s | %-100s | %s \n", cui, sctid, concept, phrase);
 	}
 
-	@Override
-	public Map<Integer, String> getHeaders() {
+	public Map<Integer, String> getHeaderFields() {
 		return null;
 		// return String.format("%10s\n %10s | %10d | %-100s | %s\n", trial,
 		// "CUI", "SCTID", "CONCEPT", "PHRASE");
 	}
 
 	@Override
-	public Map<Integer, String> getRecord() {
+	public Map<Integer, String> getRecordFields() {
 		return null;
 		// return String.format(" %10s | %10s | %-100s | %s \n", cui, sctid,
 		// concept, phrase);

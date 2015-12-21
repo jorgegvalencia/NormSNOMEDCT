@@ -1,7 +1,6 @@
 package db.reports;
 
 import java.util.List;
-import java.util.Map;
 
 public abstract class Report {
 	private List<? extends Record> records;
@@ -19,10 +18,6 @@ public abstract class Report {
 
 	public List<? extends Record> getRecords() {
 		return records;
-	}
-
-	public Map<Integer, String> getHeaders() {
-		return records.get(0).getHeaders();
 	}
 
 	public abstract void buildExcel();

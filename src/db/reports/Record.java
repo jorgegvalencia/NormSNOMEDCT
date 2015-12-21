@@ -8,7 +8,5 @@ public interface Record {
 
 	public void printRecord();
 
-	public Map<Integer, String> getHeaders();
-
-	public Map<Integer, String> getRecord();
+	public Map<Integer, String> getRecordFields();
 }

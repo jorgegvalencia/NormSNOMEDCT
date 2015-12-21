@@ -24,21 +24,20 @@ public class MatchRecord implements Record {
 		// frecuency, type, concept);
 	}
 
-	@Override
-	public Map<Integer, String> getHeaders() {
+	public static Map<Integer, String> getHeaderFields() {
 		HashMap<Integer, String> record = new HashMap<>();
-		record.put(0, fsn);
-		record.put(1, "TRIAL");
-		record.put(2, "UTTERANCE");
-		record.put(3, "PHRASE");
-		record.put(4, "SYNONYM");
-		record.put(5, "MATCHED_WORDS");
+		record.put(0, "TRIAL");
+		record.put(1, "UTTERANCE");
+		record.put(2, "PHRASE");
+		record.put(3, "SYNONYM");
+		record.put(4, "MATCHED_WORDS");
 		return record;
 	}
 
 	@Override
-	public Map<Integer, String> getRecord() {
+	public Map<Integer, String> getRecordFields() {
 		HashMap<Integer, String> record = new HashMap<>();
+		record.put(0, fsn);
 		record.put(1, trial);
 		record.put(2, utterance);
 		record.put(3, phrase);
