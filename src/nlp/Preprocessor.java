@@ -5,6 +5,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import nlp.opennlp.NLPSentenceDetector;
+
 public final class Preprocessor {
 	private static final List<String> STOP_WORDS = new ArrayList<String>(
 			Arrays.asList("and", "by", "for", "in", "of", "or", "the", "to", "with", "no"));

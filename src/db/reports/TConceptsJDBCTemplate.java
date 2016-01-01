@@ -10,7 +10,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 
 public class TConceptsJDBCTemplate {
-
+	@SuppressWarnings("unused")
 	private DataSource dataSource;
 	private JdbcTemplate jdbcTemplateObject;
 
@@ -19,16 +19,16 @@ public class TConceptsJDBCTemplate {
 		jdbcTemplateObject = new JdbcTemplate(dataSource);
 	}
 
-	public List<TrialConceptRecord> listTrialConcepts() {
-		String sql = "SELECT clinical_trial.id AS TRIAL, concept.sctid AS SCTID,"
-				+ "concept.cui AS CUI, concept.name AS CONCEPT, phrase AS PHRASE FROM concept, ec_concepts, clinical_trial "
-				+ "WHERE clinical_trial.id = ec_concepts.clinical_trial_id AND ec_concepts.concept_sctid = concept.sctid";
+	public List<TrialConceptRecord> listTrialConcepts(String nctid) {
+		String sql = "SELECT clinical_trial.nctid AS TRIAL, concept.sctid AS SCTID,"
+				+ "concept.cui AS CUI, concept.fsn AS CONCEPT, phrase AS PHRASE FROM concept, cmatch, clinical_trial "
+				+ "WHERE clinical_trial.nctid = cmatch.trial AND cmatch.sctid = concept.sctid"
+				+ " AND clinical_trial.nctid= " + "'" + nctid + "'";
 		List<TrialConceptRecord> records = jdbcTemplateObject.query(sql, new TrialConceptsMapper());
 		return records;
 	}
 
 	public static class TrialConceptsMapper implements RowMapper<TrialConceptRecord> {
-
 		@Override
 		public TrialConceptRecord mapRow(ResultSet rs, int rowNum) throws SQLException {
 			TrialConceptRecord tcr = new TrialConceptRecord();

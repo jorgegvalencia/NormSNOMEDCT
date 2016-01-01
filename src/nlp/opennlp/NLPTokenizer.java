@@ -1,4 +1,4 @@
-package nlp;
+package nlp.opennlp;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;

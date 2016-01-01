@@ -2,35 +2,20 @@ package model;
 
 import java.util.List;
 
+import nlp.Match;
+
 public class EligibilityCriteria {
 	private String trial;
 	private int number;
 	private String utterance;
-	private List<Concept> concepts;
+	private List<Match> matches;
 	private int criteriaType;
 
-	private EligibilityCriteria(EligibilityCriteriaBuilder builder) {
-		utterance = builder.utterance;
-		concepts = builder.concepts;
-		criteriaType = builder.criteriaType;
-	}
-
-	public void print() {
-		System.out.println("EC: " + utterance);
-		switch (criteriaType) {
-		case 1:
-			System.out.println("Type: Inclusion");
-			break;
-		case 2:
-			System.out.println("Type: Exclusion");
-			break;
-		default:
-			System.out.println("Type: N/A");
-		}
-		for (Concept concept : concepts)
-			concept.print();
-		System.out.println(
-				"+----------------------------------------------------------------------------------------------------------------------------------+");
+	public EligibilityCriteria(String trial, int number, String utterance, int type) {
+		this.trial = trial;
+		this.number = number;
+		this.utterance = utterance;
+		criteriaType = type;
 	}
 
 	public int getNumber() {
@@ -45,35 +30,26 @@ public class EligibilityCriteria {
 		return utterance;
 	}
 
-	public List<Concept> getConcepts() {
-		return concepts;
-	}
-
 	public int getCriteriaType() {
 		return criteriaType;
 	}
 
-	public static class EligibilityCriteriaBuilder {
-		private String utterance;
-		private List<Concept> concepts;
-		private int criteriaType;
-		private String trial;
-		private int number;
-
-		public EligibilityCriteriaBuilder(String trial, int number, String utterance, int criteriaType) {
-			this.trial = trial;
-			this.number = number;
-			this.utterance = utterance;
-			this.criteriaType = criteriaType;
-		}
-
-		public EligibilityCriteriaBuilder setConcepts(List<Concept> concepts) {
-			this.concepts = concepts;
-			return this;
-		}
-
-		public EligibilityCriteria build() {
-			return new EligibilityCriteria(this);
-		}
+	public List<Match> getMatches() {
+		return matches;
 	}
+
+	public void setMatches(List<Match> matches) {
+		this.matches = matches;
+	}
+
+	/*
+	 * private List<Concept> removeRedundancies(List<Concept> concepts) {
+	 * List<Concept> result = new ArrayList<>(); Map<String, Concept> index =
+	 * new HashMap<String, Concept>(); for (Concept c : concepts) if
+	 * (!index.containsKey(c.getCui())) index.put(c.getCui(), c); else { String
+	 * ph1 = c.getPhrase(); String ph2 = index.get(c.getCui()).getPhrase(); if
+	 * (ph1.equals(ph2)) continue; else index.get(c.getCui()).setPhrase(ph1 +
+	 * " + " + ph2); } result.addAll(index.values()); return result; }
+	 */
+
 }

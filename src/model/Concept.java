@@ -4,26 +4,33 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import db.DBManager;
+
 public class Concept {
+	private static final Pattern pattern = Pattern.compile("\\([a-z\\s/]+\\)\\z");
 	private String cui;
 	private String sctid;
-	private String name;
-	private String preferedName;
-	private String phrase;
-	private List<String> semtypes;
+	private String fsn;
 	private String hierarchy;
-	private String normalForm;
 
-	private Concept(ConceptBuilder builder) {
-		cui = builder.cui;
-		sctid = builder.sctid;
-		preferedName = builder.preferedName;
-		phrase = builder.phrase;
-		hierarchy = builder.hierarchy;
+	private DBManager db;
+
+	public Concept(String cui) throws InstantiationException {
+		this.cui = cui;
+		try {
+			getSCTid();
+			getFullySpecifiedName();
+			getSnomedHierarchy();
+		} catch (InstantiationException e) {
+			throw new InstantiationException();
+		}
 	}
 
-	public void print() {
-		System.out.format("%8s|%9s|%-60s\t%s\n", cui, sctid, preferedName, phrase);
+	public Concept(String cui, String sctid, String fsn, String hierarchy) {
+		this.cui = cui;
+		this.sctid = sctid;
+		this.fsn = fsn;
+		this.hierarchy = hierarchy;
 	}
 
 	public String getCui() {
@@ -34,88 +41,46 @@ public class Concept {
 		return sctid;
 	}
 
-	public String getName() {
-		return name;
-	}
-
-	public String getPreferedName() {
-		return preferedName;
-	}
-
-	public String getPhrase() {
-		return phrase;
-	}
-
-	public List<String> getSemtypes() {
-		return semtypes;
+	public String getFsn() {
+		return fsn;
 	}
 
 	public String getHierarchy() {
 		return hierarchy;
 	}
 
-	public String getNormalForm() {
-		return normalForm;
-	}
-
-	public void setPhrase(String phrase) {
-		this.phrase = phrase;
-	}
-
-	public void setNormalForm(String normalForm) {
-		this.normalForm = normalForm;
-	}
-
-	public static class ConceptBuilder {
-		private static final Pattern pattern = Pattern.compile("\\([a-z\\s/]+\\)\\z");
-		private String cui;
-		private String sctid;
-		private String name;
-		private String preferedName;
-		private String phrase;
-		private List<String> semtypes;
-		private String hierarchy;
-		private String normalForm;
-
-		public ConceptBuilder(String cui, String sctid, String preferedName) {
-			this.cui = cui;
-			this.sctid = sctid;
-			this.preferedName = preferedName;
-			Matcher m = pattern.matcher(preferedName);
-			if (m.find()) {
-				hierarchy = m.group(0).replaceAll("\\p{Punct}", "");
-			} else {
-				hierarchy = "N/A";
+	private void getSCTid() throws InstantiationException {
+		if (db == null)
+			db = DBManager.getInstance();
+		List<String> candidates = db.getSCTID(cui);
+		if (candidates.size() < 1)
+			throw new InstantiationException("Could not resolve the SnomedCT identifier for the concept " + cui);
+		else {
+			int status = 0;
+			for (String candidate : candidates) {
+				status = db.getStatusFromDB(candidate);
+				if (status == 1)
+					sctid = candidate;
 			}
 		}
 
-		public ConceptBuilder setName(String name) {
-			this.name = name;
-			return this;
-		}
+	}
 
-		public ConceptBuilder setPhrase(String phrase) {
-			this.phrase = phrase;
-			return this;
-		}
+	private void getFullySpecifiedName() throws InstantiationException {
+		if (db == null)
+			db = DBManager.getInstance();
+		List<String> fsn = db.getFSN(sctid);
+		if (fsn == null || fsn.size() < 1)
+			throw new InstantiationException("Could not resolve the Fully Specified Name for the concept " + cui);
+		else
+			this.fsn = fsn.get(0);
+	}
 
-		public ConceptBuilder setSemtypes(List<String> semtypes) {
-			this.semtypes = semtypes;
-			return this;
-		}
-
-		public ConceptBuilder setNormalForm(String normalForm) {
-			this.normalForm = normalForm;
-			return this;
-		}
-
-		public ConceptBuilder setHierarchy(String hierarchy) {
-			this.hierarchy = hierarchy;
-			return this;
-		}
-
-		public Concept build() {
-			return new Concept(this);
-		}
+	private void getSnomedHierarchy() {
+		Matcher m = pattern.matcher(fsn);
+		if (m.find())
+			hierarchy = m.group(0).replaceAll("\\p{Punct}", "");
+		else
+			hierarchy = "N/A";
 	}
 }

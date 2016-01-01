@@ -1,43 +1,22 @@
 package model;
 
-import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ClinicalTrial {
 
-	private URL url;
 	private String nctid;
 	private String title;
-	private String briefSummary;
-	private String startDate;
-	private String studyType;
-	// eligibility
-	// private String studyPop;
-	// private String samplingMethod;
-	private String criteria;
-	// private String minimumAge;
-	// private String maximumAge;
-
-	public void print() {
-		System.out.format("%17s:\t%s\n" + "%17s:\t%s\n" + "%17s:\t%s\n" + "%17s:\t%s\n" + "%17s:\t%s\n" + "%17s:\t%s\n",
-				"CT Title", title, "NCT ID", nctid, "URL", url, "Start date", startDate, "Study type", studyType,
-				"Brief Summary", briefSummary);
-	}
+	private String topic;
+	private CriteriaSet criteriaset;
+	private Map<String, String> attributes;
 
 	private ClinicalTrial(ClinicalTrialBuilder builder) {
 		nctid = builder.nctid;
 		title = builder.title;
-		briefSummary = builder.briefSummary;
-		startDate = builder.startDate;
-		studyType = builder.studyType;
-		// studyPop = builder.studyPop;
-		// samplingMethod = builder.samplingMethod;
-		criteria = builder.criteria;
-		// minimumAge = builder.minimumAge;
-		// maximumAge = builder.maximumAge;
-	}
-
-	public URL getUrl() {
-		return url;
+		topic = builder.topic;
+		criteriaset = builder.criteriaset;
+		attributes = builder.attributes;
 	}
 
 	public String getNctid() {
@@ -48,55 +27,31 @@ public class ClinicalTrial {
 		return title;
 	}
 
-	public String getBriefSummary() {
-		return briefSummary;
+	public String getTopic() {
+		return topic;
 	}
 
-	public String getStartDate() {
-		return startDate;
+	public CriteriaSet getCriteria() {
+		return criteriaset;
 	}
 
-	public String getStudyType() {
-		return studyType;
-	}
-
-	public String getCriteria() {
-		return criteria;
-	}
-
-	public void setCriteria(String criteria) {
-		this.criteria = criteria;
+	public Map<String, String> getAttributes() {
+		return attributes;
 	}
 
 	public static class ClinicalTrialBuilder {
-		private URL url;
 		private String nctid;
 		private String title;
-		private String briefSummary;
-		private String startDate;
-		private String studyType;
-		// eligibility
-		private String studyPop;
-		private String samplingMethod;
-		private String criteria;
-		private String minimumAge;
-		private String maximumAge;
+		private String topic;
+		private CriteriaSet criteriaset;
+		private Map<String, String> attributes;
 
-		public ClinicalTrialBuilder() {
+		public ClinicalTrialBuilder(String nctid) {
+			this.nctid = nctid;
 		}
 
 		public ClinicalTrial build() {
 			return new ClinicalTrial(this);
-		}
-
-		public ClinicalTrialBuilder setUrl(URL url) {
-			this.url = url;
-			return this;
-		}
-
-		public ClinicalTrialBuilder setNctId(String nctid) {
-			this.nctid = nctid;
-			return this;
 		}
 
 		public ClinicalTrialBuilder setTitle(String title) {
@@ -104,44 +59,29 @@ public class ClinicalTrial {
 			return this;
 		}
 
-		public ClinicalTrialBuilder setBriefSummary(String briefSummary) {
-			this.briefSummary = briefSummary;
-			return this;
-		}
-
-		public ClinicalTrialBuilder setStartDate(String startDate) {
-			this.startDate = startDate;
-			return this;
-		}
-
-		public ClinicalTrialBuilder setStudyType(String studyType) {
-			this.studyType = studyType;
-			return this;
-		}
-
-		public ClinicalTrialBuilder setStudyPop(String studyPop) {
-			this.studyPop = studyPop;
-			return this;
-		}
-
-		public ClinicalTrialBuilder setSamplingMethod(String samplingMethod) {
-			this.samplingMethod = samplingMethod;
+		public ClinicalTrialBuilder setTopic(String topic) {
+			if (this.topic == null)
+				this.topic = topic;
+			else
+				this.topic = this.topic + ", " + topic;
 			return this;
 		}
 
 		public ClinicalTrialBuilder setCriteria(String criteria) {
-			this.criteria = criteria;
+			CriteriaSet criteriaset = new CriteriaSet(nctid, criteria);
+			this.criteriaset = criteriaset;
 			return this;
 		}
 
-		public ClinicalTrialBuilder setMinimumAge(String minimumAge) {
-			this.minimumAge = minimumAge;
+		public ClinicalTrialBuilder setAttribute(String attr, String value) {
+			if (attributes == null)
+				attributes = new HashMap<String, String>();
+			attributes.put(attr, value);
 			return this;
 		}
 
-		public ClinicalTrialBuilder setMaximumAge(String maximumAge) {
-			this.maximumAge = maximumAge;
-			return this;
+		public CriteriaSet getCriteriaSet() {
+			return criteriaset;
 		}
 	}
 }

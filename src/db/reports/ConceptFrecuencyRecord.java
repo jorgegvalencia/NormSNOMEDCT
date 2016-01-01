@@ -1,5 +1,8 @@
 package db.reports;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class ConceptFrecuencyRecord implements Record {
 	private String cui;
 	private String sctid;
@@ -17,14 +20,25 @@ public class ConceptFrecuencyRecord implements Record {
 		System.out.format("%10s | %10s | %10d | %30s | %-17s \n", cui, sctid, frecuency, type, concept);
 	}
 
-	@Override
-	public String getHeaders() {
-		return String.format("%10s | %10s | %10d | %17s | %17s \n", "CUI", "SCTID", "FRECUENCY", "TYPE", "CONCEPT");
+	public static Map<Integer, String> getHeaderFields() {
+		HashMap<Integer, String> record = new HashMap<>();
+		record.put(0, "CUI");
+		record.put(1, "SCTID");
+		record.put(2, "FRECUENCY");
+		record.put(3, "TYPE");
+		record.put(4, "CONCEPT");
+		return record;
 	}
 
 	@Override
-	public String getRecord() {
-		return String.format("%10s | %10s | %10d | %17s | %17s \n", cui, sctid, frecuency, type, concept);
+	public Map<Integer, String> getRecordFields() {
+		HashMap<Integer, String> record = new HashMap<>();
+		record.put(0, cui);
+		record.put(1, sctid);
+		record.put(2, Integer.toString(frecuency));
+		record.put(3, type);
+		record.put(4, concept);
+		return record;
 	}
 
 	public void setCui(String cui) {

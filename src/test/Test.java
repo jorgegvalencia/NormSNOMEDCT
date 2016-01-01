@@ -1,36 +1,33 @@
 package test;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import db.DBManager;
+import db.reports.Report;
 import main.CTManager;
-import model.ClinicalTrial;
-import model.EligibilityCriteria;
-import nlp.ConceptExtractor;
+import nlp.ProcessingUnit;
 
 public class Test {
 
-	private static final String[] TRIALS = { "NCT02102490", "NCT01358877", "NCT00148876", "NCT01633060",
-			"NCT01700257" };
+	// private static final String[] TRIALS = { "NCT02102490", "NCT01358877",
+	// "NCT00148876", "NCT01633060","NCT01700257" };
 
 	public static void main(String[] args) {
-		CTManager ctm = new CTManager();
-		ctm.buildClinicalTrial("NCT00378313").print();
-		for (String trial : TRIALS) {
-			metamapTest(trial);
-			System.out.println("\n");
-		}
-
+		Report rp = DBManager.getInstance().getCFReport();
+		rp.buildReport();
+		rp.buildExcel();
 	}
 
-	public static void metamapTest(String nctid) {
-		CTManager ctm = new CTManager();
-		ConceptExtractor ce = new ConceptExtractor("luria.dia.fi.upm.es");
-		ClinicalTrial ct = ctm.buildClinicalTrial(nctid);
-		ct.print();
-		System.out.println(ct.getCriteria());
-		List<EligibilityCriteria> ecList = ce.getEligibilityCriteriaFromText(ct.getNctid(), ct.getCriteria());
-		for (EligibilityCriteria ec : ecList)
-			if (!ec.getConcepts().isEmpty())
-				ec.print();
+	private static ProcessingUnit init(String nctid) {
+		return CTManager.buildProcessingUnit(nctid);
+	}
+
+	private static List<ProcessingUnit> init(List<String> trials) {
+		List<ProcessingUnit> pulist = new ArrayList<>();
+		for (String nctid : trials) {
+			pulist.add(CTManager.buildProcessingUnit(nctid));
+		}
+		return pulist;
 	}
 }

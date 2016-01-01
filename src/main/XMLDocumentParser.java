@@ -16,7 +16,6 @@ import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.events.XMLEvent;
 
 public class XMLDocumentParser {
@@ -69,41 +68,21 @@ public class XMLDocumentParser {
 			XMLEventReader eventReader = factory.createXMLEventReader(br);
 			while (eventReader.hasNext()) {
 				XMLEvent event = eventReader.nextEvent();
-				if (event.getEventType() == XMLStreamConstants.START_ELEMENT) {
+				if (event.getEventType() == XMLStreamConstants.START_ELEMENT)
 					System.out.println(resolveEventType(event.getEventType()) + "::"
 							+ event.asStartElement().getName().getLocalPart());
-				} else if (event.getEventType() == XMLStreamConstants.END_ELEMENT) {
+				else if (event.getEventType() == XMLStreamConstants.END_ELEMENT)
 					System.out.println(resolveEventType(event.getEventType()) + "::"
 							+ event.asEndElement().getName().getLocalPart());
-				} else if (event.getEventType() == XMLStreamConstants.CHARACTERS) {
+				else if (event.getEventType() == XMLStreamConstants.CHARACTERS)
 					System.out.println(resolveEventType(event.getEventType()) + "::" + "\""
 							+ event.asCharacters().getData().trim() + "\"");
-				}
 			}
 		} catch (XMLStreamException e) {
 			e.printStackTrace();
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
-	}
-
-	// Returns the string value of a CHARACTER type value
-	private String readCharacters(XMLStreamReader reader) throws XMLStreamException {
-		StringBuilder result = new StringBuilder();
-		while (reader.hasNext()) {
-			int eventType = reader.next();
-			switch (eventType) {
-			case XMLStreamReader.CHARACTERS:
-			case XMLStreamReader.CDATA:
-				result.append(reader.getText());
-				break;
-			case XMLStreamReader.END_ELEMENT:
-				return result.toString();
-			default:
-				return null;
-			}
-		}
-		throw new XMLStreamException("Premature end of file");
 	}
 
 	public static String resolveEventType(int element) {
